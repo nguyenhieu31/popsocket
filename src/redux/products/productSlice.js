@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import waiting from "../../hooks/waiting";
 // import ProductType from './../../component/partial/product-type/product-type';
-const API_URL = "https://popsocket-80cc4ytir-nguyenhieu31.vercel.app";
+const API_URL = process.env.REACT_APP_API_URL;
 export const getProducts = createAsyncThunk(
   //action type string
   "products/getProducts",
@@ -24,6 +24,7 @@ export const getProductsBySearch = createAsyncThunk(
   // callback function
   async (data) => {
     const url = `${API_URL}/products`;
+
     try {
       await waiting(2000);
       const res = await axios.get(url);

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-const API_URL = "https://popsocket-80cc4ytir-nguyenhieu31.vercel.app";
+const API_URL = process.env.REACT_APP_API_URL;
 const useProductOutstanding = () => {
   const [productOutstanding, setProductOutstanding] = useState([]);
   const [loading, setLoading] = useState(false);

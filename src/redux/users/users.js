@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
-const API_URL = "https://popsocket-80cc4ytir-nguyenhieu31.vercel.app";
+const API_URL = process.env.REACT_APP_API_URL;
 export const setUsers = createAsyncThunk(
   //action type string
   "users/setUsers",
@@ -150,7 +150,9 @@ export const addToCart = createAsyncThunk(
           return innitValues;
         }
       }
-    } catch (err) {}
+    } catch (err) {
+      console.error(err.response);
+    }
   }
 );
 export const getProductInCartByUser = createAsyncThunk(

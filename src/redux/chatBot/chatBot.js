@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import waiting from "../../hooks/waiting";
-const API_URL = "https://popsocket-80cc4ytir-nguyenhieu31.vercel.app";
+const API_URL = process.env.REACT_APP_API_URL;
 export const getMessageBot = createAsyncThunk(
   //action type string
   "messageBot/getMessageBot",
