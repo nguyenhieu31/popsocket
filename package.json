@@ -2,6 +2,7 @@
   "name": "popsocket",
   "version": "0.1.0",
   "private": true,
+  "proxy": "https://popsocket-80cc4ytir-nguyenhieu31.vercel.app",
   "dependencies": {
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
