@@ -4,6 +4,7 @@ import MenuItemReducer from "./menuItem/menuItemSlice";
 import ProductDetailReducer from "./product-details/product-details";
 import usersReducer from "./users/users";
 import ChatBotReducer from "./chatBot/chatBot";
+import CommentReducer from "./comment/comment";
 export const store = configureStore({
   reducer: {
     products: ProductReducer, // new line
@@ -11,5 +12,6 @@ export const store = configureStore({
     productDetail: ProductDetailReducer,
     users: usersReducer,
     ChatBot: ChatBotReducer,
+    comment: CommentReducer,
   },
 });

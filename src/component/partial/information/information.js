@@ -151,7 +151,7 @@ const Information = ({ setSideBar, setActiveSearch, ...props }) => {
   function handelClickMenu() {
     setSideBar(true);
   }
-  function handelClickSearch() {
+  function handelClickBtnSearch() {
     if (window.innerWidth <= 1024) {
       dispatch(getProductsBySearch(products));
       setActiveSearch(true);
@@ -172,7 +172,7 @@ const Information = ({ setSideBar, setActiveSearch, ...props }) => {
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      handelClickSearch();
+      handelClickBtnSearch();
     }
   };
   return (
@@ -198,7 +198,7 @@ const Information = ({ setSideBar, setActiveSearch, ...props }) => {
           />
           <IconButton
             onClick={() => {
-              handelClickSearch();
+              handelClickBtnSearch();
             }}
           >
             <SearchIcon
@@ -322,7 +322,7 @@ const Information = ({ setSideBar, setActiveSearch, ...props }) => {
         >
           <IconButton
             onClick={() => {
-              handelClickSearch();
+              handelClickBtnSearch();
             }}
           >
             <SearchIcon

@@ -6,7 +6,13 @@ import React, {
   lazy,
   Suspense,
 } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
@@ -21,6 +27,16 @@ const PrivatePage = lazy(() => import("./pages/private-page"));
 const ProfilePage = lazy(() => import("./pages/profile-page"));
 const ChangePasswordPage = lazy(() => import("./pages/change-password-page"));
 const ChatBoxPage = lazy(() => import("./pages/chat-box"));
+const ScrollToTop = () => {
+  const location = useLocation();
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [location]);
+  return null;
+};
 function App() {
   const [sideBar, setSideBar] = useState(false);
   const [activeSearch, setActiveSearch] = useState(false);
@@ -57,6 +73,7 @@ function App() {
   return (
     <>
       <BrowserRouter>
+        <ScrollToTop />
         <NavBarPage
           sideBar={sideBar}
           setSideBar={setSideBar}

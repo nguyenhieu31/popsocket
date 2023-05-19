@@ -1565,11 +1565,11 @@
       "password": "11111111",
       "confirmPassword": "11111111",
       "id": 1,
-      "nickName": "hiếu",
+      "nickName": "hieunguyen",
       "date": "2003-10-31",
       "sex": "male",
-      "nationality": "english",
-      "updatedDate": "Thu Dec 15 2022 00:22:54 GMT+0700 (Indochina Time)"
+      "nationality": "việt nam",
+      "updatedDate": "Sat May 06 2023 20:38:26 GMT+0700 (Indochina Time)"
     },
     {
       "firstName": "Cao",
@@ -1621,64 +1621,6 @@
       "id": 1,
       "cartItems": [
         {
-          "id": 8,
-          "frontImage": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw3b5bb683/images/hi-res/Sea-Green_01_Front.png?sw=400&sh=400",
-          "behindImage": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dwbb95671d/images/hi-res/Sea-Green_02_Perspective.png?sw=400&sh=400",
-          "name": "PopWallets + Sea Green",
-          "price": 25,
-          "listImageHidden": [
-            {
-              "image": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw2f3b421c/images/hi-res/Disney_Earridescent_Peppermint-Mickey_03_Expanded.png?sw=800&sh=800"
-            },
-            {
-              "image": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw1e11cb90/images/hi-res/Disney_Earridescent_Peppermint-Mickey_04_Device-Black-Collapsed.png?sw=800&sh=800"
-            },
-            {
-              "image": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw38720a73/images/hi-res/Disney_Earridescent_Peppermint-Mickey_05_Device-Black-Expanded.png?sw=800&sh=800"
-            },
-            {
-              "image": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw2413efb1/images/hi-res/Disney_Earridescent_Peppermint-Mickey_06_Device-White-Collapsed.png?sw=800&sh=800"
-            },
-            {
-              "image": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw48fac8b8/images/hi-res/Disney_Earridescent_Peppermint-Mickey_07_Device-White-Expanded.png?sw=800&sh=800"
-            },
-            {
-              "image": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw44f6172f/images/hi-res/Disney_Earridescent_Peppermint-Mickey_08_Top-Only.png?sw=800&sh=800"
-            }
-          ],
-          "idUser": 1,
-          "quantity": 1
-        },
-        {
-          "id": 15,
-          "frontImage": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw3df28d6d/images/hi-res/FidgetTrain_01_Collapsed.png?sw=400&sh=400",
-          "behindImage": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw438a617a/images/hi-res/FidgetTrain_02_Expanded.png?sw=400&sh=400",
-          "name": "Fidget Train",
-          "price": 20,
-          "listImageHidden": [
-            {
-              "image": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw2f3b421c/images/hi-res/Disney_Earridescent_Peppermint-Mickey_03_Expanded.png?sw=800&sh=800"
-            },
-            {
-              "image": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw1e11cb90/images/hi-res/Disney_Earridescent_Peppermint-Mickey_04_Device-Black-Collapsed.png?sw=800&sh=800"
-            },
-            {
-              "image": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw38720a73/images/hi-res/Disney_Earridescent_Peppermint-Mickey_05_Device-Black-Expanded.png?sw=800&sh=800"
-            },
-            {
-              "image": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw2413efb1/images/hi-res/Disney_Earridescent_Peppermint-Mickey_06_Device-White-Collapsed.png?sw=800&sh=800"
-            },
-            {
-              "image": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw48fac8b8/images/hi-res/Disney_Earridescent_Peppermint-Mickey_07_Device-White-Expanded.png?sw=800&sh=800"
-            },
-            {
-              "image": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw44f6172f/images/hi-res/Disney_Earridescent_Peppermint-Mickey_08_Top-Only.png?sw=800&sh=800"
-            }
-          ],
-          "idUser": 1,
-          "quantity": 1
-        },
-        {
           "id": 3,
           "frontImage": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw0e79d4c7/images/hi-res/QRX-MagSafe_Clear_Clear_01A_Front.png?sw=400&sh=400",
           "behindImage": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw78e1ae50/images/hi-res/QRX-MagSafe_Clear_Clear_03A_Expanded.png?sw=400&sh=400",
@@ -1713,35 +1655,6 @@
           "behindImage": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dwac627a24/images/hi-res/PW+_MagSafe_Black_02_34.png?sw=400&sh=400",
           "name": "PopWallets + for MagSafe Black",
           "price": 40,
-          "listImageHidden": [
-            {
-              "image": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw2f3b421c/images/hi-res/Disney_Earridescent_Peppermint-Mickey_03_Expanded.png?sw=800&sh=800"
-            },
-            {
-              "image": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw1e11cb90/images/hi-res/Disney_Earridescent_Peppermint-Mickey_04_Device-Black-Collapsed.png?sw=800&sh=800"
-            },
-            {
-              "image": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw38720a73/images/hi-res/Disney_Earridescent_Peppermint-Mickey_05_Device-Black-Expanded.png?sw=800&sh=800"
-            },
-            {
-              "image": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw2413efb1/images/hi-res/Disney_Earridescent_Peppermint-Mickey_06_Device-White-Collapsed.png?sw=800&sh=800"
-            },
-            {
-              "image": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw48fac8b8/images/hi-res/Disney_Earridescent_Peppermint-Mickey_07_Device-White-Expanded.png?sw=800&sh=800"
-            },
-            {
-              "image": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw44f6172f/images/hi-res/Disney_Earridescent_Peppermint-Mickey_08_Top-Only.png?sw=800&sh=800"
-            }
-          ],
-          "idUser": 1,
-          "quantity": 1
-        },
-        {
-          "id": 7,
-          "frontImage": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw5b7d2654/images/hi-res/Disney_Earridescent_Peppermint-Mickey_01_Top.png?sw=400&sh=400",
-          "behindImage": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dwcb5f9b19/images/hi-res/Disney_Earridescent_Peppermint-Mickey_03_Expanded.png?sw=400&sh=400",
-          "name": "Disney Mickey Mouse Peppermint PopOut",
-          "price": 25,
           "listImageHidden": [
             {
               "image": "https://www.popsockets.com/dw/image/v2/BFSM_PRD/on/demandware.static/-/Sites-popsockets-master-catalog/default/dw2f3b421c/images/hi-res/Disney_Earridescent_Peppermint-Mickey_03_Expanded.png?sw=800&sh=800"

@@ -2,25 +2,27 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
 const API_URL = process.env.REACT_APP_API_URL;
+//user
 export const setUsers = createAsyncThunk(
   //action type string
   "users/setUsers",
   // callback function
   async (values) => {
-    const url = `${API_URL}/users`;
+    const url = `${API_URL}/users/signup-account`;
     try {
-      const res = await axios.get(url);
-      const findUser = res.data.find((user) => {
-        return user.email === values.email;
-      });
-      if (findUser) {
+      const res = await axios.post(url, values);
+      if (res.status === 200) {
+        toast.success("Create account successful");
+        return;
+      }
+    } catch (err) {
+      if (err.response && err.response.status === 403) {
         toast.error("email is already existing");
         return;
       } else {
-        await axios.post(url, values);
-        toast.success("Create account successful");
+        console.log("Error occurred:", err.message);
       }
-    } catch (err) {}
+    }
   }
 );
 export const getUser = createAsyncThunk(
@@ -28,21 +30,22 @@ export const getUser = createAsyncThunk(
   "users/getUser",
   // callback function
   async (values) => {
-    const url = `${API_URL}/users`;
+    const url = `${API_URL}/users/login`;
     try {
-      const res = await axios.get(url);
-      const findUser = res.data.find((user) => {
-        return user.email === values.email;
-      });
-      if (findUser && findUser.password === values.password) {
+      const res = await axios.post(url, values);
+      if (res.status === 200) {
         toast.success("login successful");
-        localStorage.setItem("user", JSON.stringify(findUser));
-        return;
-      } else {
-        toast.error("email or password is incorrect");
+        localStorage.setItem("user", JSON.stringify(res.data));
         return;
       }
-    } catch (err) {}
+    } catch (err) {
+      if (err.response && err.response.status === 401) {
+        toast.error("email or password is incorrect");
+        return;
+      } else {
+        console.log("Error occurred:", err.message);
+      }
+    }
   }
 );
 export const updateUser = createAsyncThunk(
@@ -50,11 +53,10 @@ export const updateUser = createAsyncThunk(
   "users/updateUser",
   // callback function
   async (dataInit) => {
-    const url = `${API_URL}/users/${dataInit.id}`;
+    const url = `${API_URL}/user/update/${dataInit.id}`;
     const data = JSON.parse(JSON.stringify(dataInit));
-    data.updatedDate = new Date().toString();
     try {
-      const res = await axios.patch(url, data);
+      const res = await axios.put(url, data);
       if (res) {
         toast.success("update successful");
         localStorage.setItem("user", JSON.stringify(res.data));
@@ -71,9 +73,9 @@ export const changePassword = createAsyncThunk(
   "users/changePassword",
   // callback function
   async (dataInit) => {
-    const url = `${API_URL}/users/${dataInit.id}`;
+    const url = `${API_URL}/user/change-password/${dataInit.id}`;
     const data = JSON.parse(JSON.stringify(dataInit));
-    data.updatedDate = new Date().toString();
+    // data.updatedDate = new Date().toString();
     try {
       const res = await axios.patch(url, data);
       if (res) {
@@ -87,71 +89,47 @@ export const changePassword = createAsyncThunk(
     } catch (err) {}
   }
 );
+export const updateAvatarUser = createAsyncThunk(
+  //action type string
+  "users/updateAvatarUser",
+  // callback function
+  async (data) => {
+    const url = `${API_URL}/user/${data.userID}/upload-avatar`;
+    let formData = new FormData();
+    formData.append("file", data.file);
+    try {
+      const res = await axios.post(url, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      if (res.status === 200) {
+        toast.success("update successful");
+        localStorage.setItem("user", JSON.stringify(res.data));
+        return res.data;
+      } else {
+        toast.error("update is fail");
+        return;
+      }
+    } catch (err) {}
+  }
+);
+
+//cart
 export const addToCart = createAsyncThunk(
   //action type string
   "users/addToCart",
   // callback function
   async (values) => {
-    const urlCart = `${API_URL}/carts`;
+    const urlCart = `${API_URL}/products/${values.id}/add-to-cart`;
     try {
-      const resCart = await axios.get(urlCart);
-      const user = JSON.parse(localStorage.getItem("user"));
-      if (user) {
-        let innitValues = {
-          id: values.idUser,
-          cartItems: [],
-        };
-        const findCartByUser = resCart.data.filter((item) => {
-          return item.id === innitValues.id;
-        });
-        if (findCartByUser.length > 0) {
-          const isProduct = findCartByUser.find((item) => {
-            const { cartItems } = item;
-            const isItem = cartItems.find((detailItem) => {
-              return detailItem.id === values.id;
-            });
-            if (isItem) {
-              return item;
-            }
-            return null;
-          });
-          if (isProduct) {
-            const url = `${API_URL}/carts/${isProduct.id}`;
-            const findIndexProductInCart = isProduct.cartItems.findIndex(
-              (item, index) => {
-                return item.id === values.id;
-              }
-            );
-            let deleteItem = isProduct.cartItems.splice(
-              findIndexProductInCart,
-              1
-            );
-            let [newItem] = deleteItem;
-            newItem.quantity++;
-            isProduct.cartItems.splice(findIndexProductInCart, 0, newItem);
-            await axios.patch(url, isProduct);
-            toast.success("add to cart successful");
-            return isProduct;
-          } else {
-            const url = `${API_URL}/carts/${innitValues.id}`;
-            innitValues.cartItems.push({ ...values, quantity: 1 });
-            const [value] = findCartByUser;
-            innitValues.cartItems = innitValues.cartItems.concat(
-              value.cartItems
-            );
-            await axios.patch(url, JSON.parse(JSON.stringify(innitValues)));
-            toast.success("add to cart successful");
-            return innitValues;
-          }
-        } else {
-          innitValues.cartItems.push({ ...values, quantity: 1 });
-          await axios.post(urlCart, JSON.parse(JSON.stringify(innitValues)));
-          toast.success("add to cart successful");
-          return innitValues;
-        }
+      const resCart = await axios.post(urlCart, values);
+      if (resCart.status === 200) {
+        toast.success("add to cart successful");
+        return resCart.data;
       }
     } catch (err) {
-      console.error(err.response);
+      if (err && err.res.status === 500) {
+        toast.error("add to cart failed");
+      }
     }
   }
 );
@@ -160,16 +138,17 @@ export const getProductInCartByUser = createAsyncThunk(
   "users/getProductInCartByUser",
   // callback function
   async (id) => {
-    const urlCart = `${API_URL}/carts`;
+    const urlCart = `${API_URL}/cart/products/${id}`;
     try {
       const resCart = await axios.get(urlCart);
-      const findCartByUser = resCart.data.find((item) => {
-        return item.id === id;
-      });
-      if (findCartByUser) {
-        return findCartByUser;
+      if (resCart.status === 200) {
+        return resCart.data;
       }
-    } catch (err) {}
+    } catch (err) {
+      if (err && err.res.status === 500) {
+        return err.message;
+      }
+    }
   }
 );
 export const decrementCartItem = createAsyncThunk(
@@ -177,41 +156,17 @@ export const decrementCartItem = createAsyncThunk(
   "users/decrementCartItem",
   // callback function
   async (data) => {
-    const urlCart = `${API_URL}/carts`;
+    const urlCart = `${API_URL}/cart/products/decrementProducts/${data.id}`;
     try {
-      const resCart = await axios.get(urlCart);
-      let innitValues = {
-        id: data.idUser,
-        cartItems: [],
-      };
-      const findCartByUser = resCart.data.find((item) => {
-        return item.id === data.idUser;
-      });
-      if (findCartByUser) {
-        const { id, cartItems } = findCartByUser;
-        const url = `${API_URL}/carts/${id}`;
-        const product = cartItems.find((item) => {
-          return item.id === data.id;
-        });
-        const indexProduct = cartItems.findIndex((item) => {
-          return item.id === data.id;
-        });
-        if (product && product.quantity === 1) {
-          const newCartItems = cartItems.filter((item) => {
-            return item.id !== product.id;
-          });
-          innitValues.cartItems = newCartItems;
-          await axios.patch(url, JSON.parse(JSON.stringify(innitValues)));
-          return innitValues.cartItems;
-        } else {
-          product.quantity--;
-          cartItems.splice(indexProduct, 1, product);
-          innitValues.cartItems = cartItems;
-          await axios.patch(url, JSON.parse(JSON.stringify(innitValues)));
-          return innitValues.cartItems;
-        }
+      const resCart = await axios.patch(urlCart, data);
+      if (resCart.status === 200) {
+        return resCart.data;
       }
-    } catch (e) {}
+    } catch (err) {
+      if (err && err.res.status === 500) {
+        console.log(err.message);
+      }
+    }
   }
 );
 export const incrementCartItem = createAsyncThunk(
@@ -219,34 +174,17 @@ export const incrementCartItem = createAsyncThunk(
   "users/incrementCartItem",
   // callback function
   async (data) => {
-    const urlCart = `${API_URL}/carts`;
+    const urlCart = `${API_URL}/cart/products/incrementProducts/${data.id}`;
     try {
-      const resCart = await axios.get(urlCart);
-      let innitValues = {
-        id: data.idUser,
-        cartItems: [],
-      };
-      const findCartByUser = resCart.data.find((item) => {
-        return item.id === data.idUser;
-      });
-      if (findCartByUser) {
-        const { id, cartItems } = findCartByUser;
-        const url = `${API_URL}/carts/${id}`;
-        const product = cartItems.find((item) => {
-          return item.id === data.id;
-        });
-        const indexProduct = cartItems.findIndex((item) => {
-          return item.id === data.id;
-        });
-        if (product) {
-          product.quantity++;
-          cartItems.splice(indexProduct, 1, product);
-          innitValues.cartItems = cartItems;
-          await axios.patch(url, JSON.parse(JSON.stringify(innitValues)));
-          return innitValues;
-        }
+      const resCart = await axios.patch(urlCart, data);
+      if (resCart.status === 200) {
+        return resCart.data;
       }
-    } catch (e) {}
+    } catch (err) {
+      if (err && err.res.status === 500) {
+        console.log(err.message);
+      }
+    }
   }
 );
 export const deleteCartItem = createAsyncThunk(
@@ -254,27 +192,18 @@ export const deleteCartItem = createAsyncThunk(
   "users/deleteCartItem",
   // callback function
   async (data) => {
-    const urlCart = `${API_URL}/carts`;
+    const urlCart = `${API_URL}/cart/products/delete/${data.id}?userID=${data.id_user}`;
     try {
-      const resCart = await axios.get(urlCart);
-      let innitValues = {
-        id: data.idUser,
-        cartItems: [],
-      };
-      const findCartByUser = resCart.data.find((item) => {
-        return item.id === data.idUser;
-      });
-      if (findCartByUser) {
-        const { id, cartItems } = findCartByUser;
-        const url = `${API_URL}/carts/${id}`;
-        const newCartItems = cartItems.filter((item) => {
-          return item.id !== data.id;
-        });
-        innitValues.cartItems = newCartItems;
-        await axios.patch(url, JSON.parse(JSON.stringify(innitValues)));
-        return innitValues.cartItems;
+      const resCart = await axios.delete(urlCart);
+      if (resCart.status === 200) {
+        toast.success("delete successful");
+        return resCart.data;
       }
-    } catch (e) {}
+    } catch (err) {
+      if (err && err.res.status === 500) {
+        console.log(err.message);
+      }
+    }
   }
 );
 const initialState = {
@@ -317,6 +246,9 @@ const usersSlice = createSlice({
       .addCase(changePassword.pending, (state, action) => {
         state.loading = true;
       })
+      .addCase(updateAvatarUser.pending, (state, action) => {
+        state.loading = true;
+      })
       .addCase(addToCart.pending, (state, action) => {
         state.loading = true;
       })
@@ -348,16 +280,18 @@ const usersSlice = createSlice({
         state.loading = false;
         state.user = action.payload;
       })
+      .addCase(updateAvatarUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
       .addCase(addToCart.fulfilled, (state, action) => {
         state.loading = false;
-        const { cartItems } = action.payload;
-        state.cart = cartItems;
+        state.cart = action.payload;
       })
       .addCase(getProductInCartByUser.fulfilled, (state, action) => {
         state.loading = false;
         if (action.payload) {
-          const { cartItems } = action.payload;
-          state.cart = cartItems;
+          state.cart = action.payload;
         }
       })
       .addCase(decrementCartItem.fulfilled, (state, action) => {
@@ -366,8 +300,7 @@ const usersSlice = createSlice({
       })
       .addCase(incrementCartItem.fulfilled, (state, action) => {
         state.loading = false;
-        const { cartItems } = action.payload;
-        state.cart = cartItems;
+        state.cart = action.payload;
       })
       .addCase(deleteCartItem.fulfilled, (state, action) => {
         state.loading = false;
@@ -386,6 +319,10 @@ const usersSlice = createSlice({
         state.errorMessage = action.payload.message;
       })
       .addCase(changePassword.rejected, (state, action) => {
+        state.loading = false;
+        state.errorMessage = action.payload.message;
+      })
+      .addCase(updateAvatarUser.rejected, (state, action) => {
         state.loading = false;
         state.errorMessage = action.payload.message;
       })

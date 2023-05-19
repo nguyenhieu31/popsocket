@@ -78,7 +78,7 @@ const ChangePassword = () => {
     onSubmit: (values) => {
       if (values) {
         user.password = values.password;
-        user.confirmPassword = values.confirmPassword;
+        // user.confirmPassword = values.confirmPassword;
         dispatch(changePassword(user));
         setTimeout(() => {
           const user = JSON.parse(localStorage.getItem("user"));

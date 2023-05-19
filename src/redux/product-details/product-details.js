@@ -9,7 +9,9 @@ export const getProductDetail = createAsyncThunk(
     const url = `${API_URL}/products/${id}`;
     try {
       const res = await axios.get(url);
-      return res.data;
+      if (res) {
+        return res.data;
+      }
     } catch (err) {
       console.log(err);
     }
@@ -41,15 +43,13 @@ const productDetailSlice = createSlice({
       })
       .addCase(getProductDetail.fulfilled, (state, action) => {
         state.loading = false;
-        state.productDetailItem = action.payload;
-        const { frontImage, behindImage, listImageHidden } = action.payload;
-        state.listImage.push(frontImage, behindImage);
-        state.listImage = state.listImage.concat(
-          listImageHidden.map((item) => {
-            const { image } = item;
-            return image;
-          })
-        );
+        const { product, galerythumbnail } = action.payload;
+        state.productDetailItem = product;
+        state.listImage.push(product.front_thumbnail, product.behind_thumbnail);
+        const arrayThumbnail = galerythumbnail.map((item) => {
+          return item.imagegalery;
+        });
+        state.listImage = state.listImage.concat(arrayThumbnail);
         state.listImage = state.listImage.slice(0, 8);
       })
       .addCase(getProductDetail.rejected, (state, action) => {

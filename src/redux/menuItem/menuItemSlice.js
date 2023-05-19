@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-const API_URL = "https://popsocket-80cc4ytir-nguyenhieu31.vercel.app";
+const API_URL = process.env.REACT_APP_API_URL;
 export const getProductMenuItem = createAsyncThunk(
   //action type string
   "menuItem/getProductMenuItem",
   // callback function
   async (data) => {
-    const url = `${API_URL}/menuItem`;
+    const url = `${API_URL}/category`;
     try {
       const res = await axios.get(url);
       if (res) {

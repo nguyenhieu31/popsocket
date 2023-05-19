@@ -2,6 +2,7 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getProductMenuItem } from "../../../redux/menuItem/menuItemSlice";
+import { getProducts } from "../../../redux/products/productSlice";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Grid from "@mui/material/Grid";
@@ -146,14 +147,24 @@ const SideBarMenu = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const { menuItem } = useSelector((state) => state.menuItem);
+  function handleCLickPage() {
+    dispatch(getProducts());
+  }
   return (
     <MenuItem className="menu_item hidden">
       {menuItem.map((product, index) => {
-        const { name, children } = product;
+        const { name, arrayItems } = product;
         return (
           <li key={index + 1}>
-            <Link to={`/${name}`}>{name}</Link>
-            {children.length !== 0 ? (
+            <Link
+              to={`/${name}`}
+              onClick={() => {
+                handleCLickPage();
+              }}
+            >
+              {name}
+            </Link>
+            {arrayItems.length !== 0 ? (
               <MenuChild className="menu_item-list">
                 <Grid
                   className="menu_child"
@@ -161,13 +172,13 @@ const SideBarMenu = () => {
                   spacing={3}
                   sx={{ margin: "0", gap: "3rem", maxWidth: "100%" }}
                 >
-                  {children.map((child, index) => {
-                    const { childName, image } = child;
+                  {arrayItems.map((item, index) => {
+                    const { name_thumbnail, image } = item;
                     return (
                       <Grid item xs style={{ padding: "0" }} key={index + 1}>
                         <div className="product_item">
                           <Link>
-                            <span className="item_text">{childName}</span>
+                            <span className="item_text">{name_thumbnail}</span>
                           </Link>
                           <img src={image} alt="..."></img>
                         </div>

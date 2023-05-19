@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import waiting from "../../hooks/waiting";
-// import ProductType from './../../component/partial/product-type/product-type';
 const API_URL = process.env.REACT_APP_API_URL;
 export const getProducts = createAsyncThunk(
   //action type string
@@ -9,6 +8,7 @@ export const getProducts = createAsyncThunk(
   // callback function
   async (data) => {
     const url = `${API_URL}/products`;
+    // const url = "http://localhost:8080/api/v1/products";
     try {
       await waiting(2000);
       const res = await axios.get(url);
@@ -23,19 +23,15 @@ export const getProductsBySearch = createAsyncThunk(
   "products/getProductsBySearch",
   // callback function
   async (data) => {
-    const url = `${API_URL}/products`;
-
     try {
       await waiting(2000);
-      const res = await axios.get(url);
-      if (res) {
-        if (data.length > 0) {
-          return data;
-        } else {
-          const searchResult = res.data.filter(
-            (item) => item.name === data.name
-          );
-          return searchResult;
+      if (data.length > 0) {
+        return data;
+      } else {
+        const url = `${API_URL}/products/search`;
+        const res = await axios.post(url, data);
+        if (res) {
+          return res.data;
         }
       }
     } catch (err) {}
@@ -44,19 +40,11 @@ export const getProductsBySearch = createAsyncThunk(
 export const getCategoryProduct = createAsyncThunk(
   "categoryProductType/getCategoryProductType",
   async (data) => {
-    const url = `${API_URL}/products`;
+    const url = `${API_URL}/products-category`;
     try {
       const res = await axios.get(url);
       if (res) {
-        const categoryProduct = res.data.reduce((acc, product) => {
-          const category = product.name.split(" ")[0];
-          if (!acc[category]) {
-            acc[category] = [];
-          }
-          acc[category].push(product);
-          return acc;
-        }, {});
-        return categoryProduct;
+        return res.data;
       }
     } catch (error) {}
   }
@@ -64,15 +52,12 @@ export const getCategoryProduct = createAsyncThunk(
 export const getProductByPrice = createAsyncThunk(
   "productByPrice/getProductByPrice",
   async (data) => {
-    const url = `${API_URL}/products`;
+    const url = `${API_URL}/products-price`;
     try {
-      const res = await axios.get(url);
+      await waiting(1500);
+      const res = await axios.post(url, data);
       if (res) {
-        const { firstPrice, lastPrice } = data;
-        const products = res.data.filter((product) => {
-          return product.price >= firstPrice && product.price <= lastPrice;
-        });
-        return products;
+        return res.data;
       }
     } catch (error) {}
   }
@@ -80,20 +65,12 @@ export const getProductByPrice = createAsyncThunk(
 export const sortProductsByPrice = createAsyncThunk(
   "sortProduct/sortProductsByPrice",
   async (data) => {
-    const url = `${API_URL}/products`;
+    const url = `${API_URL}/product/sort-price`;
     try {
-      const res = await axios.get(url);
+      await waiting(1500);
+      const res = await axios.post(url, { type: data });
       if (res) {
-        let products = JSON.parse(JSON.stringify(res.data));
-        if (data === "Price Low To High") {
-          products = products.sort((a, b) => a.price - b.price);
-          return products;
-        } else if (data === "Price High To Low") {
-          products = products.sort((a, b) => b.price - a.price);
-          return products;
-        } else {
-          return res.data;
-        }
+        return res.data;
       }
     } catch (error) {}
   }
@@ -124,7 +101,7 @@ const ProductSlice = createSlice({
         state.loading = true;
       })
       .addCase(getProductsBySearch.pending, (state, action) => {
-        state.isSearch = true;
+        state.loading = true;
       })
       .addCase(getCategoryProduct.pending, (state, action) => {
         state.loading = true;
@@ -137,10 +114,11 @@ const ProductSlice = createSlice({
       })
       .addCase(getProducts.fulfilled, (state, action) => {
         state.loading = false;
+        state.productsSearch = [];
         state.products = action.payload;
       })
       .addCase(getProductsBySearch.fulfilled, (state, action) => {
-        state.isSearch = false;
+        state.loading = false;
         state.productsSearch = action.payload;
       })
       .addCase(getCategoryProduct.fulfilled, (state, action) => {
@@ -160,7 +138,7 @@ const ProductSlice = createSlice({
         state.errorMessage = action.payload.message;
       })
       .addCase(getProductsBySearch.rejected, (state, action) => {
-        state.isSearch = false;
+        state.loading = false;
         state.errorMessage = action.payload.message;
       })
       .addCase(getCategoryProduct.rejected, (state, action) => {

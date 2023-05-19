@@ -18,7 +18,7 @@ import GoogleIcon from "@mui/icons-material/Google";
 import EditIcon from "@mui/icons-material/Edit";
 import { useSelector, useDispatch } from "react-redux";
 import IconButton from "@mui/material/IconButton";
-import { updateUser } from "../../../redux/users/users";
+import { updateUser, updateAvatarUser } from "../../../redux/users/users";
 import { useFormik } from "formik";
 const ProfileStyle = styled.div`
   font-family: "Open Sans", sans-serif;
@@ -67,6 +67,11 @@ const ProfileStyle = styled.div`
             & > div {
               width: 130px;
               height: 130px;
+            }
+            & > img {
+              width: 130px;
+              height: 130px;
+              border-radius: 50%;
             }
           }
           & > .name {
@@ -277,12 +282,13 @@ const ProfileStyle = styled.div`
 `;
 const ProfileUi = () => {
   const navigate = useNavigate();
+  // const [avatar, setAvatar] = useState(null);
   const formik = useFormik({
     initialValues: {
       id: 1,
-      nickName: "",
-      date: "",
-      sex: "male",
+      nick_name: "",
+      day_of_birth: "",
+      sex: "female",
       nationality: "vietnam",
     },
     onSubmit: (values) => {
@@ -291,7 +297,7 @@ const ProfileUi = () => {
   });
   const dispatch = useDispatch();
   const { isLogined, user } = useSelector((state) => state.users);
-  const { email, firstName, lastName, phone, id } = user;
+  const { email, first_name, last_name, phone, id, avatar } = user;
   useEffect(() => {
     if (user) {
       updateForm(user);
@@ -302,11 +308,25 @@ const ProfileUi = () => {
     dispatch(updateUser(values));
   }
   function updateForm(values) {
-    const { nickName, sex, nationality, date } = values;
-    formik.setFieldValue("nickName", nickName || "");
+    const { nick_name, sex, nationality, day_of_birth } = values;
+    formik.setFieldValue("nick_name", nick_name || "");
     formik.setFieldValue("sex", sex || "female");
     formik.setFieldValue("nationality", nationality || "vietnam");
-    formik.setFieldValue("date", date || "");
+    formik.setFieldValue("day_of_birth", day_of_birth || "");
+  }
+  function handleFileChange(e) {
+    const file = e.target.files[0];
+
+    // const url = URL.createObjectURL(file);
+    // setAvatar(url);
+    // // console.log(url);
+    if (file) {
+      const data = {
+        userID: user.id,
+        file: file,
+      };
+      dispatch(updateAvatarUser(data));
+    }
   }
   return (
     <>
@@ -314,7 +334,7 @@ const ProfileUi = () => {
         <ProfileStyle style={{ marginTop: "7rem", padding: "1rem 2rem" }}>
           <div className="dashboard">
             <Link to="/new">
-              <span>Home</span>
+              <span>New</span>
             </Link>
           </div>
           <div className="container">
@@ -328,25 +348,48 @@ const ProfileUi = () => {
                     className="avatar"
                     style={{ position: "relative" }}
                   >
-                    <Avatar src="/broken-image.jpg" />
-                    <IconButton
-                      style={{
-                        position: "absolute",
-                        right: "5%",
-                        bottom: "0",
-                        backgroundColor: "#ccc",
-                        color: "#fff",
-                      }}
-                    >
-                      <EditIcon style={{ fontSize: "0.8rem" }} />
-                    </IconButton>
+                    {avatar ? (
+                      <img src={avatar} alt="" />
+                    ) : (
+                      <Avatar src="/broken-image.jpg" />
+                    )}
+                    <form id="formAvatar" encType="multipart/form-data">
+                      <IconButton
+                        style={{
+                          position: "absolute",
+                          right: "5%",
+                          bottom: "0",
+                          backgroundColor: "#ccc",
+                          color: "#fff",
+                        }}
+                      >
+                        <label
+                          htmlFor="upload-avatar"
+                          style={{
+                            cursor: "pointer",
+                            fontSize: "1rem",
+                            width: "16px",
+                            height: "20px",
+                          }}
+                        >
+                          <EditIcon style={{ width: "16px", height: "20px" }} />
+                        </label>
+                        <input
+                          type="file"
+                          name="file"
+                          id="upload-avatar"
+                          onChange={handleFileChange}
+                          hidden
+                        />
+                      </IconButton>
+                    </form>
                   </Stack>
                   <div className="name">
                     <div className="firstName-lastName">
                       <label>Surname & First Name</label>
                       <input
                         type="text"
-                        value={`${firstName} ${lastName}`}
+                        value={`${first_name} ${last_name}`}
                         disabled
                       />
                     </div>
@@ -354,9 +397,9 @@ const ProfileUi = () => {
                       <label>Nickname</label>
                       <input
                         placeholder="add nickname"
-                        id="nickName"
-                        name="nickName"
-                        value={formik.values.nickName}
+                        id="nick_name"
+                        name="nick_name"
+                        value={formik.values.nick_name}
                         onChange={formik.handleChange}
                       />
                     </div>
@@ -367,9 +410,9 @@ const ProfileUi = () => {
                   <div className="choose-date">
                     <input
                       type="date"
-                      name="date"
+                      name="day_of_birth"
                       id="date"
-                      value={formik.values.date}
+                      value={formik.values.day_of_birth}
                       onChange={formik.handleChange}
                     />
                   </div>
@@ -435,7 +478,7 @@ const ProfileUi = () => {
                     </div>
                     <div className="info-content">
                       <span>Phone Number</span>
-                      <span>0{phone}</span>
+                      <span>{phone}</span>
                     </div>
                   </div>
                   <div className="btn">

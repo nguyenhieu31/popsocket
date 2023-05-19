@@ -9,7 +9,7 @@ import ProductPopularAddOns from "../../UI/product-popular-addOns/product-popula
 import MainContentProduct from "../../UI/main-content-product/main-content-product";
 import { useSelector, useDispatch } from "react-redux";
 import { addToCart, getProductInCartByUser } from "../../../redux/users/users";
-const ListImgaeSlider = styled.div`
+const ListImageSliders = styled.div`
   width: max-content;
   overflow: hidden;
   overflow-y: scroll;
@@ -254,7 +254,7 @@ const InformationProductAndPaysMethod = ({
   const { user } = useSelector((state) => state.users);
   useEffect(() => {
     if (user) {
-      dispatch(getProductInCartByUser(user));
+      dispatch(getProductInCartByUser(user.id));
     }
   }, [dispatch]);
   const { name, price } = productDetail;
@@ -320,7 +320,7 @@ const InformationProductAndPaysMethod = ({
   return (
     <ResDisplayProduct className="information-product_and_pays-method">
       <div className="information-product">
-        <ListImgaeSlider className="list-images">
+        <ListImageSliders className="list-images">
           <ul>
             {loading
               ? ""
@@ -339,7 +339,7 @@ const InformationProductAndPaysMethod = ({
                   );
                 })}
           </ul>
-        </ListImgaeSlider>
+        </ListImageSliders>
         <ImageDisplay className="image-display">
           <img
             src={listImage[locationImage]}

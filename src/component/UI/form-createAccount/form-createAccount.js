@@ -15,11 +15,11 @@ import { useDispatch } from "react-redux";
 import { setUsers } from "../../../redux/users/users";
 import { Link, useNavigate } from "react-router-dom";
 const validationSchema = yup.object({
-  firstName: yup
+  first_name: yup
     .string("Enter your first name")
     .min(2, "First name must have min two characters")
     .required("First name is required"),
-  lastName: yup
+  last_name: yup
     .string("Enter your last name")
     .min(2, "First name must have min two characters")
     .required("Last name is required"),
@@ -116,8 +116,8 @@ const FormCreateAccount = () => {
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
-      firstName: "",
-      lastName: "",
+      first_name: "",
+      last_name: "",
       phone: "",
       email: "",
       password: "",
@@ -148,23 +148,23 @@ const FormCreateAccount = () => {
         </div>
         <TextField
           fullWidth
-          id="firstName"
-          name="firstName"
-          label="firstName"
-          value={formik.values.firstName}
+          id="first_name"
+          name="first_name"
+          label="first_name"
+          value={formik.values.first_name}
           onChange={formik.handleChange}
-          error={formik.touched.firstName && Boolean(formik.errors.firstName)}
-          helperText={formik.touched.firstName && formik.errors.firstName}
+          error={formik.touched.first_name && Boolean(formik.errors.first_name)}
+          helperText={formik.touched.first_name && formik.errors.first_name}
         />
         <TextField
           fullWidth
-          id="lastName"
-          name="lastName"
-          label="lastName"
-          value={formik.values.lastName}
+          id="last_name"
+          name="last_name"
+          label="last_name"
+          value={formik.values.last_name}
           onChange={formik.handleChange}
-          error={formik.touched.lastName && Boolean(formik.errors.lastName)}
-          helperText={formik.touched.lastName && formik.errors.lastName}
+          error={formik.touched.last_name && Boolean(formik.errors.last_name)}
+          helperText={formik.touched.last_name && formik.errors.last_name}
         />
         <TextField
           fullWidth

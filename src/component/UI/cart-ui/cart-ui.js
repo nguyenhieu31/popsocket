@@ -388,12 +388,12 @@ const CartUi = () => {
           <div className="list-cart">
             {cart && cart.length > 0 ? (
               cart.map((item, index) => {
-                const { frontImage, name, price, quantity } = item;
+                const { front_thumbnail, name, price, quantity } = item;
                 return (
                   <div className="cart-item" key={index + 1}>
                     <div className="cart-item-left">
                       <div className="image">
-                        <img src={frontImage} alt="" />
+                        <img src={front_thumbnail} alt="" />
                       </div>
                       <div className="content">
                         <h3 className="cart-item-name">{name}</h3>

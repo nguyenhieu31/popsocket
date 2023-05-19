@@ -1,12 +1,12 @@
-import React from 'react'
-import styled, { keyframes } from 'styled-components';
-import Logo from '../../../UI/logo/logo';
-import { Link, useNavigate } from 'react-router-dom';
-import ClearIcon from '@mui/icons-material/Clear';
-import IconButton from '@mui/material/IconButton';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import { useSelector, useDispatch } from 'react-redux';
-import { logout } from "../../../../redux/users/users"
+import React from "react";
+import styled, { keyframes } from "styled-components";
+import Logo from "../../../UI/logo/logo";
+import { Link, useNavigate } from "react-router-dom";
+import ClearIcon from "@mui/icons-material/Clear";
+import IconButton from "@mui/material/IconButton";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../../../../redux/users/users";
 const activeMenu = keyframes`
     0%{
       transform: translateX(-100%);
@@ -14,20 +14,21 @@ const activeMenu = keyframes`
     100%{
       transform: translateX(0);
     }
-`
+`;
 const StyleMenuActive = styled.div`
   padding: 10px 1rem;
   animation: ${activeMenu} 0.25s linear;
   font-family: "Open Sans", sans-serif;
-  &>.container{
+  & > .container {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    &>.logo{
+    & > .logo {
       display: flex;
       align-items: center;
-      &>.logo_link{
-        background: url('https://www.popsockets.com/on/demandware.static/Sites-AMER-Site/-/en_US/v1667797420334/images/logo.svg') no-repeat center;
+      & > .logo_link {
+        background: url("https://www.popsockets.com/on/demandware.static/Sites-AMER-Site/-/en_US/v1667797420334/images/logo.svg")
+          no-repeat center;
         background-size: contain;
         width: 210px;
         height: 60px;
@@ -35,14 +36,14 @@ const StyleMenuActive = styled.div`
       }
     }
   }
-  &>.menu{
+  & > .menu {
     padding: 10px 2rem;
     display: flex;
     flex-direction: column;
     margin: 0;
     gap: 1rem;
-    &>li{
-      background-color: #F9F9F9;
+    & > li {
+      background-color: #f9f9f9;
       list-style: none;
       display: flex;
       align-items: center;
@@ -50,89 +51,89 @@ const StyleMenuActive = styled.div`
       padding: 1rem;
       border-radius: 1rem;
       cursor: pointer;
-      &>a{
+      & > a {
         text-decoration: none;
         color: #181818;
       }
-      &>.image{
+      & > .image {
         width: 75px;
         height: 75px;
-        &>img{
+        & > img {
           width: 100%;
           height: 100%;
         }
       }
     }
   }
-  &>.support-and-category{
+  & > .support-and-category {
     padding: 10px 2rem;
-    &>.category,
-    &>.support{
+    & > .category,
+    & > .support {
       display: flex;
       align-items: center;
       gap: 0.5rem;
       margin-top: 1rem;
       padding: 1rem;
-      border-top: 1px solid #F9F9F9;
-      &>a{
+      border-top: 1px solid #f9f9f9;
+      & > a {
         text-decoration: none;
         color: #181818;
       }
     }
-    &>.category{
-      &>.sign-in{
+    & > .category {
+      & > .sign-in {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        &>a{
+        & > a {
           text-decoration: none;
           color: #181818;
         }
       }
-      &>.account{
+      & > .account {
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
         width: 100%;
         color: #181818;
-        &>.title{
+        & > .title {
           display: flex;
           align-items: center;
           gap: 0.5rem;
         }
-        &>.container{
+        & > .container {
           margin: 0;
           padding: 0;
-          &>li{
+          & > li {
             list-style: none;
             margin-top: 1rem;
             padding: 1rem 0;
-            border-top: 1px solid #F9F9F9;
+            border-top: 1px solid #f9f9f9;
             cursor: pointer;
             transition: all 0.5s ease-in-out;
-            &>a{
+            & > a {
               text-decoration: none;
               color: #181818;
               font-family: "Open Sans", sans-serif;
               transition: all 0.5s ease-in-out;
             }
           }
-          &>li.my-profile{
+          & > li.my-profile {
             border: none;
           }
-          &>li:hover>a{
+          & > li:hover > a {
             text-decoration: underline;
           }
         }
       }
     }
   }
-  @media screen and (min-width: 1024px){
-    &{
+  @media screen and (min-width: 1024px) {
+    & {
       display: none;
     }
   }
-`
+`;
 
 const MenuActive = ({ sideBar, setSideBar, menuItem }) => {
   const navigate = useNavigate();
@@ -140,43 +141,63 @@ const MenuActive = ({ sideBar, setSideBar, menuItem }) => {
   const { isLogined, user } = useSelector((state) => state.users);
   function handleCLickSignIn() {
     setSideBar(false);
-    navigate('/login');
+    navigate("/login");
   }
   function handleClickSignOut() {
     dispatch(logout());
     setSideBar(false);
-    navigate('/new');
+    navigate("/new");
   }
   function handleClickToProfile() {
     setSideBar(false);
-    navigate('/profile');
+    navigate("/profile");
   }
   return (
     <StyleMenuActive className="menu active" sideBar={sideBar}>
       <div className="container">
         <Logo />
         <div className="close-menu">
-          <IconButton aria-label="Example" onClick={() => { setSideBar(false) }}>
+          <IconButton
+            aria-label="Example"
+            onClick={() => {
+              setSideBar(false);
+            }}
+          >
             <ClearIcon style={{ color: "#181818" }} />
           </IconButton>
         </div>
       </div>
       <ul className="menu">
-        {menuItem.length > 0 && menuItem.map((item, index) => {
-          const { name, children } = item;
-          return (
-            <li key={index}>
-              <Link>{name}</Link>
-              {children.length > 0 ? (<div className="image">
-                <img src={children[0].image} alt="" />
-              </div>) : (<div className="image"></div>)}
-            </li>
-          )
-        })}
+        {menuItem.length > 0 &&
+          menuItem.map((item, index) => {
+            const { name, arrayItems } = item;
+            return (
+              <li key={index}>
+                <Link
+                  to={`/${name}`}
+                  onClick={() => {
+                    setSideBar(false);
+                  }}
+                >
+                  {name}
+                </Link>
+                {arrayItems.length > 0 ? (
+                  <div className="image">
+                    <img src={arrayItems[0].image} alt="" />
+                  </div>
+                ) : (
+                  <div className="image"></div>
+                )}
+              </li>
+            );
+          })}
         <li key={menuItem.length}>
           <Link>More</Link>
           <div className="image">
-            <img src="https://www.popsockets.com/on/demandware.static/-/Sites-amer-storefront-catalog/default/dwe14fdd6e/categories/thumbnails/more-cupholder-75x75.png" alt="" />
+            <img
+              src="https://www.popsockets.com/on/demandware.static/-/Sites-amer-storefront-catalog/default/dwe14fdd6e/categories/thumbnails/more-cupholder-75x75.png"
+              alt=""
+            />
           </div>
         </li>
       </ul>
@@ -192,7 +213,12 @@ const MenuActive = ({ sideBar, setSideBar, menuItem }) => {
                 <span>Hi, {user.lastName}</span>
               </div>
               <ul className="container">
-                <li className="my-profile" onClick={() => { handleClickToProfile() }}>
+                <li
+                  className="my-profile"
+                  onClick={() => {
+                    handleClickToProfile();
+                  }}
+                >
                   <Link>My Profile</Link>
                 </li>
                 <li className="order-history">
@@ -207,13 +233,23 @@ const MenuActive = ({ sideBar, setSideBar, menuItem }) => {
                 <li className="preferences">
                   <Link>Preferences</Link>
                 </li>
-                <li className="sign-out" onClick={() => { handleClickSignOut() }}>
+                <li
+                  className="sign-out"
+                  onClick={() => {
+                    handleClickSignOut();
+                  }}
+                >
                   <Link>Sign Out</Link>
                 </li>
               </ul>
             </div>
           ) : (
-            <div className="sign-in" onClick={() => { handleCLickSignIn() }}>
+            <div
+              className="sign-in"
+              onClick={() => {
+                handleCLickSignIn();
+              }}
+            >
               <PersonOutlineIcon />
               <Link>Sign In</Link>
             </div>
@@ -221,7 +257,7 @@ const MenuActive = ({ sideBar, setSideBar, menuItem }) => {
         </div>
       </div>
     </StyleMenuActive>
-  )
-}
+  );
+};
 
 export default MenuActive;

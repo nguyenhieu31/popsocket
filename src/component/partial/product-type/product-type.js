@@ -94,7 +94,7 @@ const ProductType = ({ isClickProductType, ...props }) => {
                     }}
                   >
                     <Link>
-                      <img src={`${arr[0].frontImage}`} alt="" />
+                      <img src={`${arr[0].front_thumbnail}`} alt="" />
                       <span className="item-text">{name}</span>
                     </Link>
                   </div>

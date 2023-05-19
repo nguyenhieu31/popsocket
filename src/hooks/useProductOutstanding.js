@@ -7,7 +7,7 @@ const useProductOutstanding = () => {
   useEffect(() => {
     async function fetchProductOutstanding() {
       setLoading(true);
-      const url = `${API_URL}/product-outStanding`;
+      const url = `${API_URL}/category/typical`;
       try {
         const res = await axios.get(url);
         if (res && res.data) {

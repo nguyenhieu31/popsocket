@@ -4,10 +4,7 @@ import Information from "../information/information";
 import SideBarMenu from "../side-bar-menu/side-bar-menu";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getProductInCartByUser,
-  loginSuccess,
-} from "../../..//redux/users/users";
+import { loginSuccess } from "../../..//redux/users/users";
 import { getProductMenuItem } from "../../../redux/menuItem/menuItemSlice";
 import MenuActive from "./menu-active/menu-active";
 import SearchUI from "./search/search";
@@ -126,7 +123,6 @@ const NavBar = ({
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
-      dispatch(getProductInCartByUser(user.id));
       dispatch(loginSuccess(user));
     }
     dispatch(getProductMenuItem());

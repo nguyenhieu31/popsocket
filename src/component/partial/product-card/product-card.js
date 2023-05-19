@@ -19,9 +19,9 @@ const ProductCard = ({ product, ...props }) => {
   }
   function getMedia() {
     if (!isHover) {
-      return product.frontImage;
+      return product.front_thumbnail;
     } else {
-      return product.behindImage;
+      return product.behind_thumbnail;
     }
   }
   function handelClickProduct(id) {
