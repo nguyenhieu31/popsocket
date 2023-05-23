@@ -2,16 +2,17 @@ import styled from "styled-components";
 import Logo from "../../UI/logo/logo";
 import Information from "../information/information";
 import SideBarMenu from "../side-bar-menu/side-bar-menu";
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "../../..//redux/users/users";
 import { getProductMenuItem } from "../../../redux/menuItem/menuItemSlice";
 import MenuActive from "./menu-active/menu-active";
 import SearchUI from "./search/search";
+import { Link } from "react-router-dom";
+import Cookies from "js-cookie";
 const StyleNavBar = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 10px 2rem;
   background-color: white;
   position: fixed;
   top: 0;
@@ -19,51 +20,88 @@ const StyleNavBar = styled.div`
   right: 0;
   z-index: 99;
   transition: top 0.5s ease-in-out;
-  .container {
-    display: grid;
-    grid-template-columns: 57% 43%;
-  }
-  .logo {
-    display: flex;
-    justify-content: flex-end;
+  & > .header-promotion {
     align-items: center;
-  }
-  .logo_link {
-    background: url("https://www.popsockets.com/on/demandware.static/Sites-AMER-Site/-/en_US/v1667797420334/images/logo.svg")
-      no-repeat center;
-    background-size: contain;
-    width: 210px;
-    height: 60px;
-    display: block;
-  }
-  .menu_nav {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 1rem;
-    margin: 0;
-    padding: 0;
-  }
-  .menu_nav.max_w-1024 {
-    display: none;
-  }
-  .menu_nav > li {
-    list-style: none;
-    color: #181818;
-    & > button {
-      & > span,
-      & > svg {
-        font-size: 1.75rem;
-      }
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: #181818;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    height: 40px;
+    transition: top 0.5s ease-in-out;
+    & > a {
+      color: #bfbfbf;
+      text-decoration: none;
+      display: flex;
+      gap: 0.25rem;
     }
   }
-  .nav_item .search {
-    color: #181818;
-    font-size: 1rem;
-    width: 100px;
+  & > .header {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    transition: top 0.5s ease-in-out;
+    padding: 10px 2rem;
+    .container {
+      display: grid;
+      grid-template-columns: 57% 43%;
+    }
+    .logo {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+    .logo_link {
+      background: url("https://www.popsockets.com/on/demandware.static/Sites-AMER-Site/-/en_US/v1667797420334/images/logo.svg")
+        no-repeat center;
+      background-size: contain;
+      width: 210px;
+      height: 60px;
+      display: block;
+    }
+    .menu_nav {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+    .menu_nav.max_w-1024 {
+      display: none;
+    }
+    .menu_nav > li {
+      list-style: none;
+      color: #181818;
+      & > button {
+        & > span,
+        & > svg {
+          font-size: 1.75rem;
+        }
+      }
+    }
+    .nav_item .search {
+      color: #181818;
+      font-size: 1rem;
+      width: 100px;
+    }
   }
   @media screen and (min-width: 1024px) {
-    & > .menu > .menu_item.active {
+    & > .header > .menu > .menu_item.active {
+      display: none;
+    }
+    .menu_nav.min_w-1024 {
+      display: flex;
+    }
+    .menu_nav.max_w-1024 {
       display: none;
     }
   }
@@ -72,16 +110,16 @@ const StyleNavBar = styled.div`
       display: flex;
       justify-content: flex-start;
     }
-    .menu_nav.min_w-1024 {
+    & > .header > .container > .menu_nav.min_w-1024 {
       display: none;
     }
-    .menu_nav.max_w-1024 {
+    & > .header > .container > .menu_nav.max_w-1024 {
       display: flex;
     }
-    & > .menu > .menu_item.hidden {
+    & > .header > .menu > .menu_item.hidden {
       display: none;
     }
-    &.active {
+    & > .header.active {
       position: absolute;
       width: 107%;
       min-height: 100vh;
@@ -92,13 +130,13 @@ const StyleNavBar = styled.div`
     }
   }
   @media screen and (max-width: 545px) {
-    & > .container {
+    & > .header > .container {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
     }
-    & > .container > .menu_nav {
+    & > .header > .container > .menu_nav {
       gap: 0;
       & > li {
         & > button {
@@ -120,13 +158,23 @@ const NavBar = ({
   ...props
 }) => {
   const dispatch = useDispatch();
+  const [position, setPosition] = useState(0);
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user) {
-      dispatch(loginSuccess(user));
+    const token = Cookies.get("token");
+    if (token) {
+      dispatch(loginSuccess(token));
     }
     dispatch(getProductMenuItem());
   }, [dispatch]);
+  const handleScroll = useCallback(() => {
+    setPosition(window.pageYOffset);
+  }, []);
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  });
   const { menuItem } = useSelector((state) => state.menuItem);
   return (
     <>
@@ -137,12 +185,27 @@ const NavBar = ({
           menuItem={menuItem}
         />
       ) : (
-        <>
-          <StyleNavBar
+        <StyleNavBar>
+          {position === 0 && (
+            <div
+              className="header-promotion"
+              style={{
+                top: `${scrolled}px`,
+                display: `${activeSearch ? "none" : "flex"}`,
+              }}
+            >
+              <Link to="/new">
+                <b>Not in USA?</b>
+                <u>Select A Regional Site</u>
+              </Link>
+            </div>
+          )}
+          <div
             className="header hidden"
             style={{
               top: `${scrolled}px`,
               display: `${activeSearch ? "none" : "flex"}`,
+              marginTop: `${position !== 0 ? "0" : "40px"}`,
             }}
           >
             <div className="container">
@@ -155,9 +218,9 @@ const NavBar = ({
             <div className="menu">
               <SideBarMenu />
             </div>
-          </StyleNavBar>
+          </div>
           {activeSearch && <SearchUI setActiveSearch={setActiveSearch} />}
-        </>
+        </StyleNavBar>
       )}
     </>
   );

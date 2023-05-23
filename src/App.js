@@ -27,6 +27,7 @@ const PrivatePage = lazy(() => import("./pages/private-page"));
 const ProfilePage = lazy(() => import("./pages/profile-page"));
 const ChangePasswordPage = lazy(() => import("./pages/change-password-page"));
 const ChatBoxPage = lazy(() => import("./pages/chat-box"));
+const PageNotProducts = lazy(() => import("./pages/page-not-product"));
 const ScrollToTop = () => {
   const location = useLocation();
   useEffect(() => {
@@ -37,6 +38,16 @@ const ScrollToTop = () => {
   }, [location]);
   return null;
 };
+const arrLinkPage = [
+  "Cases",
+  "Collections",
+  "Grips",
+  "Wallets",
+  "PopPuck",
+  "For iPhone",
+  "Charging",
+  "Sale",
+];
 function App() {
   const [sideBar, setSideBar] = useState(false);
   const [activeSearch, setActiveSearch] = useState(false);
@@ -84,14 +95,33 @@ function App() {
         <Suspense fallback={<div>Loading...</div>}>
           <Routes>
             <Route path="/" element={<Navigate to="/New" />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/New/cart" element={<CartPage />} />
+            <Route
+              path="/cart"
+              element={
+                <CartPage sideBar={sideBar} activeSearch={activeSearch} />
+              }
+            />
+            <Route
+              path="/New/cart"
+              element={
+                <CartPage sideBar={sideBar} activeSearch={activeSearch} />
+              }
+            />
             <Route
               path="/New"
               element={
                 <NewPage sideBar={sideBar} activeSearch={activeSearch} />
               }
             />
+            {arrLinkPage.map((name, index) => {
+              return (
+                <Route
+                  path={`/${name}`}
+                  element={<PageNotProducts />}
+                  key={index}
+                />
+              );
+            })}
             <Route
               path="/New/products/:id"
               element={
@@ -115,8 +145,21 @@ function App() {
               }
             />
             <Route element={<PrivatePage />}>
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/changePassword" element={<ChangePasswordPage />} />
+              <Route
+                path="/profile"
+                element={
+                  <ProfilePage sideBar={sideBar} activeSearch={activeSearch} />
+                }
+              />
+              <Route
+                path="/changePassword"
+                element={
+                  <ChangePasswordPage
+                    sideBar={sideBar}
+                    activeSearch={activeSearch}
+                  />
+                }
+              />
             </Route>
           </Routes>
           <FooterPage sideBar={sideBar} activeSearch={activeSearch} />

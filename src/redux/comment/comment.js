@@ -120,7 +120,7 @@ export const incrementButtonDislike = createAsyncThunk(
       }
     } catch (err) {
       if (err && err.response.status === 401) {
-        toast.error("like is fail");
+        toast.error("Dislike is fail");
         return;
       } else {
         console.log("Error occurred:", err.message);
@@ -130,6 +130,7 @@ export const incrementButtonDislike = createAsyncThunk(
 );
 const initialState = {
   comments: [],
+  action: "",
   loading: false,
   errorMessage: " ",
 };

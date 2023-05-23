@@ -56,6 +56,7 @@ const CartStyle = styled.div`
               &>img{
                 width: 100%;
                 height: 100%;
+                aspect-ratio: 3/2;
               }
             }
             &>.content{
@@ -310,7 +311,7 @@ const CartStyle = styled.div`
       }
   }
 `;
-const CartUi = () => {
+const CartUi = ({ activeSearch }) => {
   const dispatch = useDispatch();
   const [isClick, setIsClick] = useState(false);
   const productList = [
@@ -347,13 +348,13 @@ const CartUi = () => {
       price: [16],
     },
   ];
+  const { isLogined, cart, user } = useSelector((state) => state.users);
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
       dispatch(getProductInCartByUser(user.id));
     }
-  }, [dispatch]);
-  const { isLogined, cart } = useSelector((state) => state.users);
+  }, [dispatch, user]);
+
   function handelClickPromoCode() {
     if (isClick) {
       setIsClick(false);
@@ -378,7 +379,13 @@ const CartUi = () => {
     }
   }
   return (
-    <CartStyle style={{ padding: "10px 2rem", marginTop: "7rem" }}>
+    <CartStyle
+      style={{
+        padding: "10px 2rem",
+        marginTop: "9rem",
+        display: `${activeSearch ? "none" : "block"}`,
+      }}
+    >
       <h1 className="title">Your Cart</h1>
       <div className="container">
         <div className="box-left">

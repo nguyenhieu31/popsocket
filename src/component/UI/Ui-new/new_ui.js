@@ -4,10 +4,7 @@ import ProductsOutstanding from "../../partial/product-outstanding/product-outst
 import ClassifyProducts from "../classify-product/classify-product";
 import ProductList from "../../partial/product-list/product-list";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  loginSuccess,
-  getProductInCartByUser,
-} from "../../../redux/users/users";
+import { getProductInCartByUser } from "../../../redux/users/users";
 import { deleteDataProduct } from "../../../redux/product-details/product-details";
 import React, {
   useEffect,
@@ -48,6 +45,7 @@ const NewUi = ({ activeSearch }) => {
   const dispatch = useDispatch();
   const [viewSize, setViewSize] = useState(16);
   const { products, productsSearch } = useSelector((state) => state.products);
+  const { user } = useSelector((state) => state.users);
   const [loading, setLoading] = useState(false);
   const viewSizeRef = useRef(viewSize);
   const viewSearch = useMemo(() => {
@@ -59,16 +57,12 @@ const NewUi = ({ activeSearch }) => {
     return viewSize;
   }, [viewSize, productsSearch.length]);
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
-      Promise.all([
-        dispatch(loginSuccess(user)),
-        dispatch(getProductInCartByUser(user.id)),
-      ]);
+      dispatch(getProductInCartByUser(user.id));
     }
     Promise.all([dispatch(getProducts()), dispatch(deleteDataProduct())]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
   const handelClickViewSize = useCallback(async () => {
     setLoading(true);
     await waiting(1500);

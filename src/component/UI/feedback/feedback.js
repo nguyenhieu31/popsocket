@@ -1,7 +1,6 @@
 import ModeEditOutlineIcon from "@mui/icons-material/ModeEditOutline";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import StarIcon from "@mui/icons-material/Star";
-import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
@@ -28,6 +27,9 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import ReactReadMoreReadLess from "react-read-more-read-less";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogTitle from "@mui/material/DialogTitle";
 import "animate.css";
 const FeedbackStyle = styled.div`
   margin-top: 5rem;
@@ -325,9 +327,9 @@ const Feedback = () => {
   const [showInput, setShowInput] = useState(false);
   const [rating, setRating] = useState(5);
   const [open, setOpen] = useState(false);
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  const [dialogDelete, setDialogDelete] = useState(false);
+  const [isComment, setComment] = useState("");
+  const { user } = useSelector((state) => state.users);
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -348,6 +350,13 @@ const Feedback = () => {
     }
   }, [dispatch, id]);
   const { comments } = useSelector((state) => state.comment);
+  const handleLikeButtonClick = (comment) => {
+    handleClickLikeComment(comment);
+  };
+  const handleEditButtonClick = (comment) => {
+    setComment(comment);
+    setOpen(true);
+  };
   const handleClickLikeComment = (comment) => {
     let liked = comment.liked;
     if (liked) {
@@ -358,9 +367,14 @@ const Feedback = () => {
     const data = {
       id: comment.id,
       id_product: comment.id_product,
+      email: user.email,
       liked,
+      action: "liked",
     };
     dispatch(incrementButtonLike(data));
+  };
+  const handleDislikeButtonClick = (comment) => {
+    handleClickDislikeComment(comment);
   };
   const handleClickDislikeComment = (comment) => {
     let disliked = comment.disliked;
@@ -372,12 +386,24 @@ const Feedback = () => {
     const data = {
       id: comment.id,
       id_product: comment.id_product,
+      email: user.email,
       disliked,
+      action: "disliked",
     };
     dispatch(incrementButtonDislike(data));
   };
+  const handleDeleteButtonClick = (comment) => {
+    handleClickDeleteComment(comment);
+    setDialogDelete(false);
+  };
   const handleClickDeleteComment = (comment) => {
     dispatch(DeleteComment(comment));
+  };
+  const handleClickOpen = () => {
+    setDialogDelete(true);
+  };
+  const handleClose = () => {
+    setDialogDelete(false);
   };
   return (
     <FeedbackStyle className="feedback">
@@ -391,14 +417,21 @@ const Feedback = () => {
       </div>
       <div className="view-evaluate">
         <div className="view-icon">
-          <StarOutlineIcon />
-          <StarOutlineIcon />
-          <StarOutlineIcon />
-          <StarOutlineIcon />
-          <StarOutlineIcon />
+          <Rating
+            name="half-rating-read"
+            value={
+              comments &&
+              comments.reduce((sum, comment, index) => {
+                return (sum + comment.rating) / (index + 1);
+              }, 0)
+            }
+            precision={0.5}
+            style={{ color: "#181818" }}
+            readOnly
+          />
         </div>
         <div className="view-text">
-          <span>0 Reviews</span>
+          <span>{comments && comments.length} Reviews</span>
         </div>
       </div>
       <div className="write-question-review">
@@ -524,33 +557,67 @@ const Feedback = () => {
                               <ShareIcon />
                               <span>Share</span>
                             </div>
-                            <div className="edit" onClick={handleClickOpen}>
-                              <EditIcon />
-                              <span>Edit</span>
-                            </div>
-                            <div
-                              className="delete"
-                              onClick={() => {
-                                handleClickDeleteComment(comment);
-                              }}
-                            >
-                              <DeleteOutlineRoundedIcon />
-                              <span>Delete</span>
-                            </div>
+                            {user && comment.email_user === user.email ? (
+                              <>
+                                <div
+                                  className="edit"
+                                  onClick={() => {
+                                    handleEditButtonClick(comment);
+                                  }}
+                                >
+                                  <EditIcon />
+                                  <span>Edit</span>
+                                </div>
+                                <div
+                                  className="delete"
+                                  onClick={() => {
+                                    handleClickOpen();
+                                  }}
+                                >
+                                  <DeleteOutlineRoundedIcon />
+                                  <span>Delete</span>
+                                </div>
+                              </>
+                            ) : (
+                              ""
+                            )}
                           </div>
                           {open && (
                             <CommentEdit
                               open={open}
-                              comment={comment}
+                              comment={isComment}
                               setOpen={setOpen}
                             />
                           )}
-                          <span className="reference">
-                            Reviewed on:{" "}
-                            <Link to={`/new/products/${comment.id_product}`}>
-                              {comment.name}
-                            </Link>
-                          </span>
+                          {dialogDelete && (
+                            <Dialog
+                              open={dialogDelete}
+                              onClose={handleClose}
+                              aria-labelledby="alert-dialog-title"
+                              aria-describedby="alert-dialog-description"
+                            >
+                              <DialogTitle id="alert-dialog-title">
+                                {"You are sure delete your comment?"}
+                              </DialogTitle>
+                              <DialogActions>
+                                <Button
+                                  onClick={handleClose}
+                                  style={{ color: "#181818" }}
+                                >
+                                  Cancel
+                                </Button>
+                                <Button
+                                  onClick={() => {
+                                    handleDeleteButtonClick(comment);
+                                  }}
+                                  autoFocus
+                                  style={{ color: "red" }}
+                                >
+                                  Delete
+                                </Button>
+                              </DialogActions>
+                            </Dialog>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -561,12 +628,12 @@ const Feedback = () => {
                       <div className="interaction">
                         <span>Was This Review Helpful?</span>
                         <div className="like-dislike">
-                          <div onClick={() => handleClickLikeComment(comment)}>
+                          <div onClick={() => handleLikeButtonClick(comment)}>
                             <ThumbUpIcon />
                             <span>{comment.liked && comment.liked}</span>
                           </div>
                           <div
-                            onClick={() => handleClickDislikeComment(comment)}
+                            onClick={() => handleDislikeButtonClick(comment)}
                           >
                             <ThumbDownIcon />
                             <span>{comment.disliked && comment.disliked}</span>

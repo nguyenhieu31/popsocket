@@ -14,10 +14,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getUser } from "../../../redux/users/users";
 import { useDispatch } from "react-redux";
-import { getProductInCartByUser } from "../../../redux/users/users";
-// import firebase from "firebase/compat/app";
-// import "firebase/compat/auth";
-// import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
+import { loginSuccess } from "../../../redux/users/users";
+import Cookies from "js-cookie";
 const StyleFormLogin = styled.div`
   margin-top: 1.5rem;
   & > form {
@@ -75,11 +73,6 @@ const StyleFormLogin = styled.div`
     }
   }
 `;
-// const uiConfig = {
-//   signInFlow: "redirect",
-//   signInSuccessUrl: "/new",
-//   signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
-// };
 const validationSchema = yup.object({
   email: yup
     .string("Enter your email")
@@ -103,9 +96,9 @@ const FormLogin = () => {
       if (values) {
         dispatch(getUser(values));
         setTimeout(() => {
-          const user = JSON.parse(localStorage.getItem("user"));
-          if (user) {
-            dispatch(getProductInCartByUser(user.id));
+          const token = Cookies.get("token");
+          if (token) {
+            dispatch(loginSuccess(token));
             navigate("/new");
           }
         }, 1500);

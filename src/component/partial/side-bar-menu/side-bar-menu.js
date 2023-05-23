@@ -159,7 +159,9 @@ const SideBarMenu = () => {
             <Link
               to={`/${name}`}
               onClick={() => {
-                handleCLickPage();
+                if (name === "New") {
+                  handleCLickPage();
+                }
               }}
             >
               {name}

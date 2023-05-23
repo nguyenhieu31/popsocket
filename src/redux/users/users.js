@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Cookies from "js-cookie";
 const API_URL = process.env.REACT_APP_API_URL;
 //user
 export const setUsers = createAsyncThunk(
@@ -12,6 +13,7 @@ export const setUsers = createAsyncThunk(
     try {
       const res = await axios.post(url, values);
       if (res.status === 200) {
+        Cookies.set("token", res.data.token);
         toast.success("Create account successful");
         return;
       }
@@ -35,7 +37,7 @@ export const getUser = createAsyncThunk(
       const res = await axios.post(url, values);
       if (res.status === 200) {
         toast.success("login successful");
-        localStorage.setItem("user", JSON.stringify(res.data));
+        Cookies.set("token", res.data.token);
         return;
       }
     } catch (err) {
@@ -57,10 +59,10 @@ export const updateUser = createAsyncThunk(
     const data = JSON.parse(JSON.stringify(dataInit));
     try {
       const res = await axios.put(url, data);
-      if (res) {
+      if (res.status === 200) {
         toast.success("update successful");
-        localStorage.setItem("user", JSON.stringify(res.data));
-        return res.data;
+        Cookies.set("token", res.data.token);
+        return res.data.user;
       } else {
         toast.error("update is fail");
         return;
@@ -75,18 +77,20 @@ export const changePassword = createAsyncThunk(
   async (dataInit) => {
     const url = `${API_URL}/user/change-password/${dataInit.id}`;
     const data = JSON.parse(JSON.stringify(dataInit));
-    // data.updatedDate = new Date().toString();
     try {
       const res = await axios.patch(url, data);
-      if (res) {
+      if (res.status === 200) {
         toast.success("change password successful");
-        localStorage.setItem("user", JSON.stringify(res.data));
-        return res.data;
-      } else {
-        toast.error("change password is fail");
         return;
       }
-    } catch (err) {}
+    } catch (err) {
+      if (err && err.response.status === 401) {
+        toast.error("change password is fail");
+        return;
+      } else {
+        console.log(err);
+      }
+    }
   }
 );
 export const updateAvatarUser = createAsyncThunk(
@@ -103,8 +107,8 @@ export const updateAvatarUser = createAsyncThunk(
       });
       if (res.status === 200) {
         toast.success("update successful");
-        localStorage.setItem("user", JSON.stringify(res.data));
-        return res.data;
+        Cookies.set("token", res.data.token);
+        return res.data.user;
       } else {
         toast.error("update is fail");
         return;
@@ -112,7 +116,32 @@ export const updateAvatarUser = createAsyncThunk(
     } catch (err) {}
   }
 );
-
+export const loginSuccess = createAsyncThunk(
+  //action type string
+  "users/loginSuccess",
+  // callback function
+  async (token) => {
+    const url = `${API_URL}/users/login`;
+    try {
+      const res = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status === 200) {
+        const { data } = res.data;
+        return data;
+      }
+    } catch (err) {
+      if (err.response && err.response.status === 401) {
+        toast.error("email or password is incorrect");
+        return;
+      } else {
+        console.log("Error occurred:", err.message);
+      }
+    }
+  }
+);
 //cart
 export const addToCart = createAsyncThunk(
   //action type string
@@ -218,15 +247,7 @@ const usersSlice = createSlice({
   name: "users",
   initialState,
   reducers: {
-    loginSuccess: (state, action) => {
-      return {
-        ...state,
-        isLogined: true,
-        user: action.payload,
-      };
-    },
     logout: (state) => {
-      localStorage.removeItem("user");
       state.isLogined = false;
       state.user = null;
       state.cart = [];
@@ -238,6 +259,9 @@ const usersSlice = createSlice({
         state.loading = true;
       })
       .addCase(getUser.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(loginSuccess.pending, (state, action) => {
         state.loading = true;
       })
       .addCase(updateUser.pending, (state, action) => {
@@ -272,13 +296,18 @@ const usersSlice = createSlice({
         state.loading = false;
         state.user = action.payload;
       })
+      .addCase(loginSuccess.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isLogined = true;
+        state.user = action.payload;
+      })
       .addCase(updateUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
       })
       .addCase(changePassword.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        // state.user = action.payload;
       })
       .addCase(updateAvatarUser.fulfilled, (state, action) => {
         state.loading = false;
@@ -311,6 +340,10 @@ const usersSlice = createSlice({
         state.errorMessage = action.payload.message;
       })
       .addCase(getUser.rejected, (state, action) => {
+        state.loading = false;
+        state.errorMessage = action.payload.message;
+      })
+      .addCase(loginSuccess.rejected, (state, action) => {
         state.loading = false;
         state.errorMessage = action.payload.message;
       })
@@ -348,5 +381,5 @@ const usersSlice = createSlice({
       });
   },
 });
-export const { loginSuccess, logout } = usersSlice.actions;
+export const { logout } = usersSlice.actions;
 export default usersSlice.reducer;

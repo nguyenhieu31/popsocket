@@ -11,15 +11,23 @@ import Badge from "@mui/material/Badge";
 import { useNavigate, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import { logout, getProductInCartByUser } from "../../../redux/users/users";
+import {
+  logout,
+  getProductInCartByUser,
+  loginSuccess,
+} from "../../../redux/users/users";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 import {
   getProducts,
   getProductsBySearch,
+  getProductsBySearching,
 } from "../../../redux/products/productSlice";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import MenuIcon from "@mui/icons-material/Menu";
+import Cookies from "js-cookie";
 const HoverButtonSearch = keyframes`
 0%{
   transform: translateX(100%);
@@ -110,15 +118,25 @@ const Information = ({ setSideBar, setActiveSearch, ...props }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isLogined, cart } = useSelector((state) => state.users);
-  const { products } = useSelector((state) => state.products);
+  const { products, productsSearching, isSearch } = useSelector(
+    (state) => state.products
+  );
+  const { user } = useSelector((state) => state.users);
   const [showResults, setShowResults] = useState(false);
   const [filter, setFilter] = useState("");
   const filteredProducts = useMemo(() => {
-    return products.filter((product) => product.name.includes(filter));
-  }, [products, filter]);
+    if (productsSearching.length > 0) {
+      return productsSearching;
+    } else {
+      return products;
+    }
+  }, [products, productsSearching]);
   const inputRef = useRef(null);
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
+    const token = Cookies.get("token");
+    if (token) {
+      dispatch(loginSuccess(token));
+    }
     if (user) {
       dispatch(getProductInCartByUser(user.id));
     }
@@ -141,8 +159,10 @@ const Information = ({ setSideBar, setActiveSearch, ...props }) => {
   function handelChangeSearch(e) {
     if (e.target.value) {
       setFilter(e.target.value);
+      dispatch(getProductsBySearching(e.target.value));
     } else {
       setFilter("");
+      dispatch(getProductsBySearching(""));
     }
   }
   function handelClickResultSearch(product) {
@@ -211,24 +231,43 @@ const Information = ({ setSideBar, setActiveSearch, ...props }) => {
             onMouseOver={handleMouseOver}
             onMouseOut={handleMouseOut}
           >
-            {filter ? (
+            {productsSearching.length > 0 ? (
               <nav aria-label="secondary mailbox folders">
                 <List>
-                  {filteredProducts.map((product, index) => {
-                    return (
-                      <ListItem
-                        key={index + 1}
-                        disablePadding
-                        onClick={() => {
-                          handelClickResultSearch(product);
-                        }}
-                      >
-                        <ListItemButton>
-                          <span>{product.name}</span>
-                        </ListItemButton>
-                      </ListItem>
-                    );
-                  })}
+                  {isSearch ? (
+                    <ListItem disablePadding>
+                      <ListItemButton>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            width: "100%",
+                          }}
+                        >
+                          <CircularProgress style={{ color: "#181818" }} />
+                        </Box>
+                      </ListItemButton>
+                    </ListItem>
+                  ) : (
+                    <>
+                      {filteredProducts.map((product, index) => {
+                        return (
+                          <ListItem
+                            key={index + 1}
+                            disablePadding
+                            onClick={() => {
+                              handelClickResultSearch(product);
+                            }}
+                          >
+                            <ListItemButton>
+                              <span>{product.name}</span>
+                            </ListItemButton>
+                          </ListItem>
+                        );
+                      })}
+                    </>
+                  )}
                 </List>
               </nav>
             ) : (

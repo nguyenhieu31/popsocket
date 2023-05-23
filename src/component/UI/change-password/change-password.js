@@ -1,4 +1,5 @@
 import { useFormik } from "formik";
+import { Link } from "react-router-dom";
 import * as yup from "yup";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -6,12 +7,24 @@ import styled from "styled-components";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { changePassword } from "../../../redux/users/users";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  changePassword,
+  getProductInCartByUser,
+} from "../../../redux/users/users";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 const ChangePasswordStyle = styled.div`
   margin-top: 7rem;
   padding: 1rem 2rem;
+  & > .redirect > a {
+    color: #181818;
+    text-decoration: none;
+  }
+  & > .redirect > a:hover {
+    color: #181818a3;
+    text-decoration: underline;
+  }
   & > .container {
     width: 100%;
     display: flex;
@@ -19,6 +32,7 @@ const ChangePasswordStyle = styled.div`
     justify-content: center;
     height: 350px;
     background-color: #f9f9f9;
+    margin-top: 1rem;
     & > form {
       width: 500px;
       display: flex;
@@ -57,18 +71,19 @@ const validationSchema = yup.object({
     .required("Password is required")
     .oneOf([yup.ref("password"), null], "Passwords must match"),
 });
-const ChangePassword = () => {
+const ChangePassword = ({ activeSearch }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [openPassword, setOpenPassword] = useState(false);
   const [openConfirmPassword, setOpenConfirmPassword] = useState(false);
-  const [user, setUser] = useState({});
+  const { user } = useSelector((state) => state.users);
+  const [valueUser, setValueUser] = useState({});
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("user"));
-    if (data) {
-      setUser(data);
+    if (user) {
+      setValueUser(user);
+      dispatch(getProductInCartByUser(user.id));
     }
-  }, []);
+  }, [dispatch, user]);
   const formik = useFormik({
     initialValues: {
       password: "",
@@ -77,12 +92,10 @@ const ChangePassword = () => {
     validationSchema: validationSchema,
     onSubmit: (values) => {
       if (values) {
-        user.password = values.password;
-        // user.confirmPassword = values.confirmPassword;
-        dispatch(changePassword(user));
+        dispatch(changePassword({ ...valueUser, password: values.password }));
         setTimeout(() => {
-          const user = JSON.parse(localStorage.getItem("user"));
-          if (user) {
+          const token = Cookies.get("token");
+          if (token) {
             navigate(-1);
           }
         }, 1500);
@@ -90,8 +103,15 @@ const ChangePassword = () => {
     },
   });
   return (
-    <ChangePasswordStyle>
+    <ChangePasswordStyle
+      style={{ display: `${activeSearch ? "none" : "block"}` }}
+    >
       <h3 className="title">Set Up Password</h3>
+
+      <span className="redirect">
+        <Link to="/profile">profile</Link>/
+        <Link to="/changePassword">changePassword</Link>
+      </span>
       <div className="container">
         <form onSubmit={formik.handleSubmit}>
           <div>

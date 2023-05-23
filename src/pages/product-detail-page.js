@@ -6,7 +6,7 @@ const ProductDetailPage = ({ sideBar, activeSearch, ...props }) => {
       className="main"
       style={{
         padding: "10px 2rem",
-        marginTop: "7rem",
+        marginTop: "9rem",
         display: `${sideBar || activeSearch ? "none" : "block"}`,
       }}
     >

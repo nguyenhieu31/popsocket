@@ -18,19 +18,23 @@ import GoogleIcon from "@mui/icons-material/Google";
 import EditIcon from "@mui/icons-material/Edit";
 import { useSelector, useDispatch } from "react-redux";
 import IconButton from "@mui/material/IconButton";
-import { updateUser, updateAvatarUser } from "../../../redux/users/users";
+import {
+  updateUser,
+  updateAvatarUser,
+  getProductInCartByUser,
+} from "../../../redux/users/users";
 import { useFormik } from "formik";
 const ProfileStyle = styled.div`
   font-family: "Open Sans", sans-serif;
   color: #181818;
   & > .dashboard {
-    & > a {
+    & > .redirect > a {
       color: #181818;
       font-size: 0.9rem;
       text-decoration: none;
       transition: all 0.2s ease-in-out;
     }
-    & > a:hover {
+    & > .redirect > a:hover {
       color: #1818189e;
       text-decoration: underline;
     }
@@ -280,7 +284,7 @@ const ProfileStyle = styled.div`
     }
   }
 `;
-const ProfileUi = () => {
+const ProfileUi = ({ activeSearch }) => {
   const navigate = useNavigate();
   // const [avatar, setAvatar] = useState(null);
   const formik = useFormik({
@@ -301,8 +305,9 @@ const ProfileUi = () => {
   useEffect(() => {
     if (user) {
       updateForm(user);
+      dispatch(getProductInCartByUser(user.id));
     }
-  }, []);
+  }, [user]);
   function handelClickSave(values) {
     values.id = id;
     dispatch(updateUser(values));
@@ -316,10 +321,6 @@ const ProfileUi = () => {
   }
   function handleFileChange(e) {
     const file = e.target.files[0];
-
-    // const url = URL.createObjectURL(file);
-    // setAvatar(url);
-    // // console.log(url);
     if (file) {
       const data = {
         userID: user.id,
@@ -331,11 +332,23 @@ const ProfileUi = () => {
   return (
     <>
       {isLogined ? (
-        <ProfileStyle style={{ marginTop: "7rem", padding: "1rem 2rem" }}>
+        <ProfileStyle
+          style={{
+            marginTop: "9rem",
+            padding: "1rem 2rem",
+            display: `${activeSearch ? "none" : "block"}`,
+          }}
+        >
           <div className="dashboard">
-            <Link to="/new">
-              <span>New</span>
-            </Link>
+            <span className="redirect">
+              <Link to="/new">
+                <span>New</span>
+              </Link>
+              /
+              <Link to="/profile">
+                <span>profile</span>
+              </Link>
+            </span>
           </div>
           <div className="container">
             <div className="info-left">

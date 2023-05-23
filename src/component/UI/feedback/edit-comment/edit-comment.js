@@ -111,8 +111,10 @@ const CommentEdit = ({ comment, open, setOpen }) => {
             </div>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit" autoFocus>
+            <Button onClick={handleClose} style={{ color: "#181818" }}>
+              Cancel
+            </Button>
+            <Button type="submit" autoFocus style={{ color: "red" }}>
               Update
             </Button>
           </DialogActions>

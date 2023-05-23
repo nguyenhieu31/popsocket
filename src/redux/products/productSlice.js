@@ -37,6 +37,31 @@ export const getProductsBySearch = createAsyncThunk(
     } catch (err) {}
   }
 );
+export const getProductsBySearching = createAsyncThunk(
+  //action type string
+  "products/getProductsBySearching",
+  // callback function
+  async (data) => {
+    try {
+      if (data) {
+        await waiting(1000);
+        const url = `${API_URL}/products/searching?name=${data}`;
+        const res = await axios.get(url);
+        if (res.status === 200) {
+          return res.data;
+        }
+      } else {
+        return [];
+      }
+    } catch (err) {
+      if (err && err.response.status === 401) {
+        return [];
+      } else {
+        console.log(err.message);
+      }
+    }
+  }
+);
 export const getCategoryProduct = createAsyncThunk(
   "categoryProductType/getCategoryProductType",
   async (data) => {
@@ -80,6 +105,7 @@ const initialState = {
   loading: true,
   products: [],
   productsSearch: [],
+  productsSearching: [],
   productCategory: {},
   errorMessage: "",
   isSearch: false,
@@ -103,6 +129,9 @@ const ProductSlice = createSlice({
       .addCase(getProductsBySearch.pending, (state, action) => {
         state.loading = true;
       })
+      .addCase(getProductsBySearching.pending, (state, action) => {
+        state.isSearch = true;
+      })
       .addCase(getCategoryProduct.pending, (state, action) => {
         state.loading = true;
       })
@@ -120,6 +149,10 @@ const ProductSlice = createSlice({
       .addCase(getProductsBySearch.fulfilled, (state, action) => {
         state.loading = false;
         state.productsSearch = action.payload;
+      })
+      .addCase(getProductsBySearching.fulfilled, (state, action) => {
+        state.isSearch = false;
+        state.productsSearching = action.payload;
       })
       .addCase(getCategoryProduct.fulfilled, (state, action) => {
         state.loading = false;
@@ -139,6 +172,10 @@ const ProductSlice = createSlice({
       })
       .addCase(getProductsBySearch.rejected, (state, action) => {
         state.loading = false;
+        state.errorMessage = action.payload.message;
+      })
+      .addCase(getProductsBySearching.rejected, (state, action) => {
+        state.isSearch = false;
         state.errorMessage = action.payload.message;
       })
       .addCase(getCategoryProduct.rejected, (state, action) => {

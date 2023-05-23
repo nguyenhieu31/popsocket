@@ -3,11 +3,9 @@
 import ProductCard from "../product-card/product-card";
 import styled from "styled-components";
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-// import { getProducts } from '../../../redux/products/productSlice';
+import { useSelector } from "react-redux";
 import Box from "@mui/material/Box";
 import SkeletonUi from "../../UI/skeleton/skeleton";
-import CircularProgress from "@mui/material/CircularProgress";
 const StyleProducts = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -41,7 +39,7 @@ const StyleSkeleton = styled.div`
   }
 `;
 const ProductList = ({ viewSize, products, ...props }) => {
-  const { productsSearch, loading, isSearch } = useSelector((state) => {
+  const { productsSearch, loading } = useSelector((state) => {
     return state.products;
   });
   const [newData, setNewData] = useState([]);
@@ -70,28 +68,12 @@ const ProductList = ({ viewSize, products, ...props }) => {
       {loading ? (
         renderLoading()
       ) : (
-        <>
-          {isSearch ? (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "100%",
-                marginTop: "4rem",
-              }}
-            >
-              <CircularProgress style={{ color: "#181818" }} />
-            </Box>
-          ) : (
-            <StyleProducts>
-              {newData &&
-                newData.map((product) => {
-                  return <ProductCard product={product} key={product.id} />;
-                })}
-            </StyleProducts>
-          )}
-        </>
+        <StyleProducts>
+          {newData &&
+            newData.map((product) => {
+              return <ProductCard product={product} key={product.id} />;
+            })}
+        </StyleProducts>
       )}
     </>
   );
