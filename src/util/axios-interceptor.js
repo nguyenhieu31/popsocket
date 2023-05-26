@@ -49,9 +49,16 @@ axiosJWT.interceptors.response.use(
     const originalRequest = error.config;
     if (error.response.status === 403 && !originalRequest._retry) {
       originalRequest._retry = true;
-      const access_token = await axiosJWT();
-      axios.defaults.headers.common["Authorization"] = "Bearer " + access_token;
-      return axiosJWT(originalRequest);
+      try {
+        const accessToken = Cookies.get("token");
+        const decoded = jwt_decode(accessToken);
+        const url = `${API_URL}/user/refreshToken/${decoded.id}`;
+        const res = await axios.post(url, decoded);
+        const { token } = res.data;
+        Cookies.set("token", token, { expires: 7 });
+        axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+        return axiosJWT(originalRequest);
+      } catch (err) {}
     }
     return Promise.reject(error);
   }
