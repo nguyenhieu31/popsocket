@@ -162,7 +162,7 @@ const NavBar = ({
   useEffect(() => {
     const token = Cookies.get("token");
     if (token) {
-      dispatch(loginSuccess(token));
+      dispatch(loginSuccess());
     }
     dispatch(getProductMenuItem());
   }, [dispatch]);

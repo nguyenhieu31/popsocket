@@ -2,6 +2,8 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
+import jwt_decode from "jwt-decode";
+import { axiosJWT } from "../../util/axios-interceptor";
 const API_URL = process.env.REACT_APP_API_URL;
 //user
 export const setUsers = createAsyncThunk(
@@ -9,7 +11,7 @@ export const setUsers = createAsyncThunk(
   "users/setUsers",
   // callback function
   async (values) => {
-    const url = `${API_URL}/users/signup-account`;
+    const url = `${API_URL}/user/signup-account`;
     try {
       const res = await axios.post(url, values);
       if (res.status === 200) {
@@ -32,13 +34,14 @@ export const getUser = createAsyncThunk(
   "users/getUser",
   // callback function
   async (values) => {
-    const url = `${API_URL}/users/login`;
+    const url = `${API_URL}/user/login-account`;
     try {
       const res = await axios.post(url, values);
       if (res.status === 200) {
+        const { user, token } = res.data;
         toast.success("login successful");
-        Cookies.set("token", res.data.token);
-        return;
+        Cookies.set("token", token, { expires: 7 });
+        return user;
       }
     } catch (err) {
       if (err.response && err.response.status === 401) {
@@ -58,16 +61,26 @@ export const updateUser = createAsyncThunk(
     const url = `${API_URL}/user/update/${dataInit.id}`;
     const data = JSON.parse(JSON.stringify(dataInit));
     try {
-      const res = await axios.put(url, data);
+      const res = await axiosJWT.put(url, data);
       if (res.status === 200) {
         toast.success("update successful");
-        Cookies.set("token", res.data.token);
-        return res.data.user;
+        return res.data;
       } else {
         toast.error("update is fail");
         return;
       }
-    } catch (err) {}
+    } catch (err) {
+      if (
+        (err && err.response.status === 401) ||
+        (err && err.response.status === 403)
+      ) {
+        console.log(err.message);
+        toast.error("update failed");
+        return;
+      } else {
+        console.log(err);
+      }
+    }
   }
 );
 export const changePassword = createAsyncThunk(
@@ -78,7 +91,7 @@ export const changePassword = createAsyncThunk(
     const url = `${API_URL}/user/change-password/${dataInit.id}`;
     const data = JSON.parse(JSON.stringify(dataInit));
     try {
-      const res = await axios.patch(url, data);
+      const res = await axiosJWT.patch(url, data);
       if (res.status === 200) {
         toast.success("change password successful");
         return;
@@ -102,12 +115,11 @@ export const updateAvatarUser = createAsyncThunk(
     let formData = new FormData();
     formData.append("file", data.file);
     try {
-      const res = await axios.post(url, formData, {
+      const res = await axiosJWT.post(url, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       if (res.status === 200) {
         toast.success("update successful");
-        Cookies.set("token", res.data.token);
         return res.data.user;
       } else {
         toast.error("update is fail");
@@ -120,21 +132,43 @@ export const loginSuccess = createAsyncThunk(
   //action type string
   "users/loginSuccess",
   // callback function
-  async (token) => {
-    const url = `${API_URL}/users/login`;
+  async () => {
+    const url = `${API_URL}/user/login`;
     try {
-      const res = await axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await axiosJWT.get(url);
       if (res.status === 200) {
-        const { data } = res.data;
-        return data;
+        const { user } = res.data;
+        return user;
       }
     } catch (err) {
       if (err.response && err.response.status === 401) {
-        toast.error("email or password is incorrect");
+        return;
+      } else {
+        console.log("Error occurred:", err.message);
+      }
+    }
+  }
+);
+export const logout = createAsyncThunk(
+  //action type string
+  "users/logout",
+  // callback function
+  async () => {
+    const url = `${API_URL}/user/logout`;
+    const token = Cookies.get("token");
+    try {
+      const decoded = jwt_decode(token);
+      if (decoded) {
+        Cookies.remove("token");
+        const res = await axios.post(url, decoded);
+        if (res.status === 200) {
+          toast.success("Logout successful");
+          return;
+        }
+      }
+    } catch (err) {
+      if (err && err.response.status === 401) {
+        toast.error("Logout is incorrect");
         return;
       } else {
         console.log("Error occurred:", err.message);
@@ -168,10 +202,15 @@ export const getProductInCartByUser = createAsyncThunk(
   // callback function
   async (id) => {
     const urlCart = `${API_URL}/cart/products/${id}`;
+    const token = Cookies.get("token");
     try {
-      const resCart = await axios.get(urlCart);
-      if (resCart.status === 200) {
-        return resCart.data;
+      if (token) {
+        if (id) {
+          const resCart = await axios.get(urlCart);
+          if (resCart.status === 200) {
+            return resCart.data;
+          }
+        }
       }
     } catch (err) {
       if (err && err.res.status === 500) {
@@ -264,6 +303,9 @@ const usersSlice = createSlice({
       .addCase(loginSuccess.pending, (state, action) => {
         state.loading = true;
       })
+      .addCase(logout.pending, (state, action) => {
+        state.loading = true;
+      })
       .addCase(updateUser.pending, (state, action) => {
         state.loading = true;
       })
@@ -298,8 +340,16 @@ const usersSlice = createSlice({
       })
       .addCase(loginSuccess.fulfilled, (state, action) => {
         state.loading = false;
-        state.isLogined = true;
-        state.user = action.payload;
+        if (action.payload) {
+          state.isLogined = true;
+          state.user = action.payload;
+        }
+      })
+      .addCase(logout.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isLogined = false;
+        state.user = {};
+        state.cart = [];
       })
       .addCase(updateUser.fulfilled, (state, action) => {
         state.loading = false;
@@ -347,6 +397,10 @@ const usersSlice = createSlice({
         state.loading = false;
         state.errorMessage = action.payload.message;
       })
+      .addCase(logout.rejected, (state, action) => {
+        state.loading = false;
+        state.errorMessage = action.payload.message;
+      })
       .addCase(updateUser.rejected, (state, action) => {
         state.loading = false;
         state.errorMessage = action.payload.message;
@@ -381,5 +435,5 @@ const usersSlice = createSlice({
       });
   },
 });
-export const { logout } = usersSlice.actions;
+// export const { logout } = usersSlice.actions;
 export default usersSlice.reducer;

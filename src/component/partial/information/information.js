@@ -117,11 +117,10 @@ const AccountStyle = styled.li`
 const Information = ({ setSideBar, setActiveSearch, ...props }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isLogined, cart } = useSelector((state) => state.users);
+  const { isLogined, cart, user } = useSelector((state) => state.users);
   const { products, productsSearching, isSearch } = useSelector(
     (state) => state.products
   );
-  const { user } = useSelector((state) => state.users);
   const [showResults, setShowResults] = useState(false);
   const [filter, setFilter] = useState("");
   const filteredProducts = useMemo(() => {
@@ -135,9 +134,9 @@ const Information = ({ setSideBar, setActiveSearch, ...props }) => {
   useEffect(() => {
     const token = Cookies.get("token");
     if (token) {
-      dispatch(loginSuccess(token));
+      dispatch(loginSuccess());
     }
-    if (user) {
+    if (user && user.id) {
       dispatch(getProductInCartByUser(user.id));
     }
     dispatch(getProducts());
@@ -342,7 +341,7 @@ const Information = ({ setSideBar, setActiveSearch, ...props }) => {
             <Badge
               color="secondary"
               overlap="circular"
-              badgeContent={getTotal()}
+              badgeContent={cart && getTotal()}
             >
               <IconButton onClick={() => handelClickCart()}>
                 <ShoppingBagIcon

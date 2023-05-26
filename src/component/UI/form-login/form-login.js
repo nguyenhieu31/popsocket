@@ -98,9 +98,9 @@ const FormLogin = () => {
         setTimeout(() => {
           const token = Cookies.get("token");
           if (token) {
-            dispatch(loginSuccess(token));
-            navigate("/new");
+            dispatch(loginSuccess());
           }
+          navigate("/new");
         }, 1500);
       }
     },

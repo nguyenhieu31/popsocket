@@ -8,7 +8,6 @@ export const getProducts = createAsyncThunk(
   // callback function
   async (data) => {
     const url = `${API_URL}/products`;
-    // const url = "http://localhost:8080/api/v1/products";
     try {
       await waiting(2000);
       const res = await axios.get(url);

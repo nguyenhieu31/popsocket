@@ -31,6 +31,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
 import "animate.css";
+import { toast } from "react-toastify";
 const FeedbackStyle = styled.div`
   margin-top: 5rem;
   display: flex;
@@ -339,9 +340,13 @@ const Feedback = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      const data = { ...values, rating, id };
-      setShowInput(false);
-      dispatch(CreateComment(data));
+      if (user) {
+        const data = { ...values, rating, id, id_user: user.id };
+        setShowInput(false);
+        dispatch(CreateComment(data));
+      } else {
+        toast.error("you must be login");
+      }
     },
   });
   useEffect(() => {
@@ -370,6 +375,7 @@ const Feedback = () => {
       email: user.email,
       liked,
       action: "liked",
+      id_user: user.id,
     };
     dispatch(incrementButtonLike(data));
   };
@@ -389,6 +395,7 @@ const Feedback = () => {
       email: user.email,
       disliked,
       action: "disliked",
+      id_user: user.id,
     };
     dispatch(incrementButtonDislike(data));
   };
@@ -397,7 +404,11 @@ const Feedback = () => {
     setDialogDelete(false);
   };
   const handleClickDeleteComment = (comment) => {
-    dispatch(DeleteComment(comment));
+    const data = {
+      id_user: user.id,
+      comment,
+    };
+    dispatch(DeleteComment(data));
   };
   const handleClickOpen = () => {
     setDialogDelete(true);
@@ -587,6 +598,7 @@ const Feedback = () => {
                               open={open}
                               comment={isComment}
                               setOpen={setOpen}
+                              id={user && user.id}
                             />
                           )}
                           {dialogDelete && (

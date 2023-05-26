@@ -253,7 +253,7 @@ const InformationProductAndPaysMethod = ({
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.users);
   useEffect(() => {
-    if (user) {
+    if (user !== null) {
       dispatch(getProductInCartByUser(user.id));
     }
   }, [dispatch]);

@@ -57,7 +57,7 @@ const NewUi = ({ activeSearch }) => {
     return viewSize;
   }, [viewSize, productsSearch.length]);
   useEffect(() => {
-    if (user) {
+    if (user && user.id) {
       dispatch(getProductInCartByUser(user.id));
     }
     Promise.all([dispatch(getProducts()), dispatch(deleteDataProduct())]);

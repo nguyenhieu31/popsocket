@@ -79,7 +79,7 @@ const ChangePassword = ({ activeSearch }) => {
   const { user } = useSelector((state) => state.users);
   const [valueUser, setValueUser] = useState({});
   useEffect(() => {
-    if (user) {
+    if (user && user.id) {
       setValueUser(user);
       dispatch(getProductInCartByUser(user.id));
     }

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { axiosJWT } from "../../util/axios-interceptor";
 const API_URL = process.env.REACT_APP_API_URL;
 export const getAllComment = createAsyncThunk(
   //action type string
@@ -25,9 +26,9 @@ export const CreateComment = createAsyncThunk(
   "comment/CreateComment",
   // callback function
   async (values) => {
-    const url = `${API_URL}/user/create-comment`;
+    const url = `${API_URL}/user/create-comment/${values.id_user}`;
     try {
-      const res = await axios.post(url, values);
+      const res = await axiosJWT.post(url, values);
       if (res) {
         toast.success("post comment is successful");
         return res.data;
@@ -47,9 +48,9 @@ export const UpdateComment = createAsyncThunk(
   "comment/UpdateComment",
   // callback function
   async (values) => {
-    const url = `${API_URL}/user/update-comment`;
+    const url = `${API_URL}/user/update-comment/${values.id_user}`;
     try {
-      const res = await axios.put(url, values);
+      const res = await axiosJWT.put(url, values);
       if (res) {
         toast.success("update comment is successful");
         return res.data;
@@ -69,9 +70,9 @@ export const DeleteComment = createAsyncThunk(
   "comment/DeleteComment",
   // callback function
   async (values) => {
-    const url = `${API_URL}/user/delete-comment?id=${values.id}&id_product=${values.id_product}`;
+    const url = `${API_URL}/user/delete-comment/${values.id_user}/?id=${values.comment.id}&id_product=${values.comment.id_product}`;
     try {
-      const res = await axios.delete(url);
+      const res = await axiosJWT.delete(url);
       if (res) {
         toast.success("delete comment is successful");
         return res.data;
@@ -91,9 +92,9 @@ export const incrementButtonLike = createAsyncThunk(
   "comment/incrementButtonLike",
   // callback function
   async (values) => {
-    const url = `${API_URL}/user/comment/increase-like`;
+    const url = `${API_URL}/user/comment/${values.id_user}/increase-like`;
     try {
-      const res = await axios.post(url, values);
+      const res = await axiosJWT.post(url, values);
       if (res.status === 200) {
         return res.data;
       }
@@ -112,9 +113,9 @@ export const incrementButtonDislike = createAsyncThunk(
   "comment/incrementButtonDislike",
   // callback function
   async (values) => {
-    const url = `${API_URL}/user/comment/increase-dislike`;
+    const url = `${API_URL}/user/comment/${values.id_user}/increase-dislike`;
     try {
-      const res = await axios.post(url, values);
+      const res = await axiosJWT.post(url, values);
       if (res.status === 200) {
         return res.data;
       }

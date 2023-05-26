@@ -280,6 +280,9 @@ const ProfileStyle = styled.div`
         & > .choose-sex > div > #sex {
           flex-direction: column;
         }
+        & > .choose-sex > div > div > label > span {
+          color: #181818;
+        }
       }
     }
   }
@@ -303,7 +306,7 @@ const ProfileUi = ({ activeSearch }) => {
   const { isLogined, user } = useSelector((state) => state.users);
   const { email, first_name, last_name, phone, id, avatar } = user;
   useEffect(() => {
-    if (user) {
+    if (user && user.id) {
       updateForm(user);
       dispatch(getProductInCartByUser(user.id));
     }

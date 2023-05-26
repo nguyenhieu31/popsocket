@@ -15,7 +15,7 @@ const validationSchema = yup.object({
   title: yup.string("Enter your title").required("Title is required"),
   review: yup.string("Enter your review").required("Review is required"),
 });
-const CommentEdit = ({ comment, open, setOpen }) => {
+const CommentEdit = ({ comment, open, setOpen, id }) => {
   const dispatch = useDispatch();
   const [rating, setRating] = useState(comment.rating);
   const formik = useFormik({
@@ -31,6 +31,7 @@ const CommentEdit = ({ comment, open, setOpen }) => {
         rating,
         id: comment.id,
         id_product: comment.id_product,
+        id_user: id,
       };
       dispatch(UpdateComment(data));
     },

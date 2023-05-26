@@ -143,7 +143,7 @@ const MenuActive = ({ sideBar, setSideBar, menuItem }) => {
     setSideBar(false);
     navigate("/login");
   }
-  function handleClickSignOut() {
+  async function handleClickSignOut() {
     dispatch(logout());
     setSideBar(false);
     navigate("/new");
@@ -210,7 +210,7 @@ const MenuActive = ({ sideBar, setSideBar, menuItem }) => {
             <div className="account">
               <div className="title">
                 <PersonOutlineIcon />
-                <span>Hi, {user.lastName}</span>
+                <span>Hi, {user.last_name}</span>
               </div>
               <ul className="container">
                 <li

@@ -350,7 +350,7 @@ const CartUi = ({ activeSearch }) => {
   ];
   const { isLogined, cart, user } = useSelector((state) => state.users);
   useEffect(() => {
-    if (user) {
+    if (user && user.id) {
       dispatch(getProductInCartByUser(user.id));
     }
   }, [dispatch, user]);

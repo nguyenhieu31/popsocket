@@ -3,8 +3,8 @@ import FormLogin from "../form-login/form-login";
 import FormCheckOrder from "../form-checkOrder/form-checkOrder";
 import React from "react";
 // import { useState, useEffect } from 'react';
-// import { useSelector } from 'react-redux';
-import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useNavigate, Navigate } from "react-router-dom";
 const StylePageLoginAndCreateAcc = styled.div`
   font-family: "Open Sans", sans-serif;
   color: #181818;
@@ -53,43 +53,50 @@ const StylePageLoginAndCreateAcc = styled.div`
 `;
 const LoginUi = ({ activeSearch }) => {
   const navigate = useNavigate();
+  const { isLogined } = useSelector((state) => state.users);
   function handelClickCreateAcc() {
     navigate("/createAccount");
   }
   return (
-    <StylePageLoginAndCreateAcc
-      className="main"
-      style={{
-        marginTop: "7rem",
-        padding: "10px 2rem",
-        display: `${activeSearch ? "none" : "block"}`,
-      }}
-    >
-      <h3 className="title">Login</h3>
-      <div className="container login">
-        <div className="forms">
-          <div className="header-line">
-            <>
-              <h3 className="active">Login</h3>
-              <h3 onClick={() => handelClickCreateAcc()}>Create Account</h3>
-            </>
+    <>
+      {isLogined ? (
+        <Navigate to="/new" />
+      ) : (
+        <StylePageLoginAndCreateAcc
+          className="main"
+          style={{
+            marginTop: "7rem",
+            padding: "10px 2rem",
+            display: `${activeSearch ? "none" : "block"}`,
+          }}
+        >
+          <h3 className="title">Login</h3>
+          <div className="container login">
+            <div className="forms">
+              <div className="header-line">
+                <>
+                  <h3 className="active">Login</h3>
+                  <h3 onClick={() => handelClickCreateAcc()}>Create Account</h3>
+                </>
+              </div>
+              <FormLogin />
+            </div>
+            <div className="check-order">
+              <div className="header-line">
+                <h3>Check order</h3>
+              </div>
+              <div className="description">
+                <p>
+                  See your order even if you are not a registered user. Enter
+                  the order number and the billing address ZIP code.
+                </p>
+              </div>
+              <FormCheckOrder />
+            </div>
           </div>
-          <FormLogin />
-        </div>
-        <div className="check-order">
-          <div className="header-line">
-            <h3>Check order</h3>
-          </div>
-          <div className="description">
-            <p>
-              See your order even if you are not a registered user. Enter the
-              order number and the billing address ZIP code.
-            </p>
-          </div>
-          <FormCheckOrder />
-        </div>
-      </div>
-    </StylePageLoginAndCreateAcc>
+        </StylePageLoginAndCreateAcc>
+      )}
+    </>
   );
 };
 export default LoginUi;
